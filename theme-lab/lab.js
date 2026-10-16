@@ -451,6 +451,14 @@
     catch (err) { button.textContent = "Couldn't copy"; }
     setTimeout(() => { button.textContent = label; }, 1800);
   }
+  // If the instructions can't be loaded here, point to them on GitHub so nobody is stuck.
+  function skillFallback(button, label) {
+    button.textContent = label;
+    const note = $('#skill-note');
+    note.replaceChildren("Couldn't load the instructions here. ", el('a', { href: 'https://github.com/nicolenadine/wishlist/blob/main/skills/wishlist-theme/SKILL.md', target: '_blank', rel: 'noopener', text: 'Open them on GitHub' }), ' instead, then copy everything below the title.');
+    note.hidden = false;
+  }
+
   // The AI instructions: the same file Claude uses as a skill, ready to paste into any AI chat.
   $('#copy-skill').addEventListener('click', async (e) => {
     const button = e.currentTarget;
@@ -459,7 +467,7 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const body = (await res.text()).replace(/^---[\s\S]*?---\s*/, '');
       await copy('Use these instructions to make a theme for my wishlist site. Ask me your questions first.\n\n' + body, button, 'Copied. Now paste it into your AI.');
-    } catch (err) { button.textContent = "Couldn't load them"; }
+    } catch (err) { skillFallback(button, 'Copy AI instructions'); }
   });
 
   // The same instructions packaged the way Claude's Settings → Skills upload expects: a zip with the skill folder.
@@ -469,7 +477,7 @@
       const res = await fetch('skills/wishlist-theme/SKILL.md', { cache: 'no-cache' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       saveBlob(makeZip([['wishlist-theme/SKILL.md', await res.text()]]), 'wishlist-theme-skill.zip');
-    } catch (err) { button.textContent = "Couldn't load it"; }
+    } catch (err) { skillFallback(button, 'Or add them to Claude as a skill'); }
   });
 
   function saveBlob(blob, name) {

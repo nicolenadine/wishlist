@@ -176,11 +176,12 @@
 
     <section class="step" aria-labelledby="s1">
       <div class="step-head"><span class="step-num" aria-hidden="true">1</span><h2 id="s1">Paste the AI's answer</h2></div>
-      <p class="soft">Don't have one yet? Copy these instructions, paste them into Claude, ChatGPT or another AI, and describe the look you want. (<a href="docs/make-a-theme-with-ai.md">More help</a>)</p>
+      <p class="soft">Don't have one yet? Copy these instructions, paste them into Claude, ChatGPT or another AI, and describe the look you want. (<a href="https://github.com/nicolenadine/wishlist/blob/main/docs/make-a-theme-with-ai.md" target="_blank" rel="noopener">More help</a>)</p>
       <div class="row" style="margin:0 0 12px">
         <button type="button" class="btn" id="copy-skill">Copy AI instructions</button>
         <button type="button" class="btn btn-quiet" id="skill-zip">Or add them to Claude as a skill</button>
       </div>
+      <p class="note" id="skill-note" role="status" hidden></p>
       <p class="soft">Then paste the AI's whole answer here, chat text and all. The lab picks out the theme files.</p>
       <label for="paste" class="soft" hidden>The AI's answer</label>
       <textarea id="paste" spellcheck="false" placeholder="Paste here. For example:&#10;&#10;```css theme.css&#10;:root { --page: #FFF7F0; … }&#10;```&#10;```json theme.json&#10;{ &quot;name&quot;: &quot;Cozy Cabin&quot;, … }&#10;```"></textarea>
