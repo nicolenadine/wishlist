@@ -129,10 +129,13 @@ Bigger, easier text for older visitors: raise `body { font-size: 17px; }` and gi
 
 ### Traps to avoid
 
-- **A dark header.** If `--header` is dark and you make `.hero` text light, the welcome box (`.dialog`) and the header counts (`.stat`) still have light backgrounds, so their text disappears. Give them their own colors, for example `.dialog { color: var(--text); }` and `.stat { background: rgba(255,255,255,0.12); color: var(--on-dark); border-color: rgba(255,255,255,0.3); }`.
+- **A dark header.** If `--header` is dark and you make `.hero` text light, the welcome box (`.dialog`) and the header counts (`.stat`) still have light backgrounds, so their text disappears. Give them their own colors, for example `.dialog { color: var(--text); }` and `.stat { background: rgba(0,0,0,0.22); color: var(--on-dark); border-color: rgba(255,255,255,0.3); }`. A see-through white pill on a mid-tone header usually isn't dark enough for small light text.
 - **Text that's hard to read.** Every piece of text needs strong contrast with what's behind it: at least 4.5 to 1 for normal text, 3 to 1 for big headings. Pale text on a pale button and gold on cream are the usual mistakes. Check `.view` and `.loot-btn` especially.
 - **Starred cards.** `--star-card` sits behind the item name and price, so it must stay light enough (or dark enough) for `--text`.
 - **Background images.** Don't put photos or busy patterns behind text.
+- **Cutting off the star badge.** Each starred card has a badge that sits half outside its top corner. Never put `overflow: hidden` on `.card`; to round the photo, use `.photo { border-radius: …; }` instead.
+- **Squeezed buttons.** Cards are narrow and hold two buttons side by side (`.view` and `.loot-btn`). Keep `view` and `loot` to one or two short words, and let the buttons stack rather than wrap their words:
+  `.card-actions { width: 100%; flex-wrap: wrap; gap: 8px; } .card-actions > * { flex: 1 1 auto; justify-content: center; white-space: nowrap; }`
 
 
 ## theme.json
@@ -241,6 +244,7 @@ Rules for pictures:
 - [ ] `theme.json` is valid JSON, and every picture it lists has a block (and the other way around).
 - [ ] Every picture has `width` and `height` as well as a `viewBox`.
 - [ ] Every `-rgb` variable matches its color.
+- [ ] Nothing sets `overflow: hidden` on `.card`, and the card buttons can stack.
 - [ ] Text contrast is strong on the page, cards, starred cards, buttons, header, welcome box and header counts.
 - [ ] Wording is consistent everywhere.
 - [ ] Nothing copies someone else's characters, logos or art.

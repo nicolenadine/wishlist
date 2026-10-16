@@ -210,6 +210,34 @@
     return new XMLSerializer().serializeToString(root);
   }
 
+  // Pictures pasted without file names go to the spots that fit their size: three 64×64 pictures are
+  // the mascot, a 1200-wide one is the header scene, and so on. First exact sizes, then the closest shape.
+  const SLOT_SIZE = { heroSky: [420, 170], heroScene: [1200, 178], portrait: [46, 46], mascotIdle: [64, 64], mascotHappy: [64, 64], mascotSad: [64, 64], lootBag: [96, 96] };
+  function svgSize(markup) {
+    const head = (markup.match(/<svg\b[^>]*>/i) || [''])[0];
+    const num = (name) => parseFloat((head.match(new RegExp('\\s' + name + '\\s*=\\s*["\']?([\\d.]+)', 'i')) || [])[1]);
+    let w = num('width'), h = num('height');
+    if (!(w > 0 && h > 0)) {
+      const vb = (head.match(/viewBox\s*=\s*["']([^"']+)["']/i) || [])[1];
+      const parts = vb ? vb.trim().split(/[\s,]+/).map(Number) : [];
+      if (parts.length === 4) { w = parts[2]; h = parts[3]; }
+    }
+    return w > 0 && h > 0 ? [w, h] : null;
+  }
+  function matchStrays(wanted, files, strays) {
+    const open = Object.entries(wanted).filter(([slot, file]) => SLOT_SIZE[slot] && !files[cleanPath(file || '')]).map(([slot]) => slot);
+    const left = strays.map((markup) => ({ markup, size: svgSize(markup) }));
+    const out = {};
+    const take = (slot, test) => {
+      const i = left.findIndex((st) => st.size && test(st.size, SLOT_SIZE[slot]));
+      if (i >= 0) { out[slot] = left[i].markup; left.splice(i, 1); }
+    };
+    open.forEach((slot) => take(slot, (a, b) => Math.abs(a[0] - b[0]) <= 2 && Math.abs(a[1] - b[1]) <= 2));
+    open.filter((slot) => !out[slot]).forEach((slot) => take(slot, (a, b) => Math.abs(a[0] / a[1] - b[0] / b[1]) / (b[0] / b[1]) < 0.25));
+    open.filter((slot) => !out[slot]).forEach((slot) => { const i = left.findIndex((st) => !st.size); if (i >= 0) { out[slot] = left[i].markup; left.splice(i, 1); } });
+    return out;
+  }
+
   function buildTheme(text) {
     const notes = [];
     const note = (level, ...parts) => notes.push({ level, parts });
@@ -255,11 +283,12 @@
     const wanted = json && json.art && typeof json.art === 'object' ? json.art : {};
     const used = new Set();
     let found = 0;
+    const strayFor = matchStrays(wanted, files, strays);
     for (const [slot, file] of Object.entries(wanted)) {
       if (!ART_SLOTS.includes(slot)) { note('warn', code('theme.json'), ' names a picture spot called "' + slot + '", which the shop doesn\'t have.'); continue; }
       const path = cleanPath(file || '');
       let markup = path && files[path];
-      if (!markup && strays.length) { markup = strays.shift(); note('info', 'A picture without a file name was used for ', code(path || slot), '.'); }
+      if (!markup && strayFor[slot]) { markup = strayFor[slot]; note('info', 'A picture without a file name was matched to ', code(path || slot), ' by its size.'); }
       if (!markup) { note('warn', 'Picture ', code(path || String(file)), " is listed but wasn't pasted, so that spot stays empty."); continue; }
       used.add(path);
       const problem = svgProblem(markup);
@@ -329,13 +358,19 @@
   const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 
   // The color actually behind an element: its own background, blended over its parents'.
-  function backdrop(win, node) {
+  // Gradients count too: each solid-enough color in a gradient is a possible backdrop, and the
+  // check uses whichever is hardest to read against.
+  function backdrops(win, node) {
     const layers = [];
+    let bases = [[255, 255, 255, 1]];
     for (let n = node; n && n.nodeType === 1; n = n.parentElement) {
-      const c = parseColor(win.getComputedStyle(n).backgroundColor);
-      if (c && c[3] > 0) { layers.push(c); if (c[3] >= 1) break; }
+      const cs = win.getComputedStyle(n);
+      const stops = (cs.backgroundImage.match(/rgba?\([^)]*\)/g) || []).map(parseColor).filter((c) => c && c[3] >= 0.6);
+      const c = parseColor(cs.backgroundColor);
+      if (stops.length) { bases = stops.map((st) => (c && c[3] > 0 ? over(st, over(c, [255, 255, 255, 1])) : over(st, [255, 255, 255, 1]))); break; }
+      if (c && c[3] > 0) { if (c[3] >= 1) { bases = [c]; break; } layers.push(c); }
     }
-    return layers.reduceRight((under, top) => over(top, under), [255, 255, 255, 1]);
+    return bases.map((base) => layers.reduceRight((under, top) => over(top, under), base));
   }
 
   const READ_SPOTS = [
@@ -377,8 +412,8 @@
       const cs = win.getComputedStyle(node);
       const fg = parseColor(cs.color);
       if (!fg) continue;
-      const bg = backdrop(win, node);
-      const ratio = contrast(over(fg, bg), bg);
+      let bg = null, ratio = Infinity;
+      for (const b of backdrops(win, node)) { const r = contrast(over(fg, b), b); if (r < ratio) { ratio = r; bg = b; } }
       const size = parseFloat(cs.fontSize);
       const big = bigByRole || size >= 24 || (size >= 18.6 && Number(cs.fontWeight) >= 700);
       const need = big ? 3 : 4.5;
