@@ -88,8 +88,8 @@
       }
     }
     if (open) blocks.push(open); // an unclosed last block still counts
-    // No code blocks at all: treat the whole paste as one file.
-    if (!blocks.length && text.trim()) blocks.push({ info: '', lines: lines, before: '' });
+    // No code blocks: the answer was probably copied by selecting it, which drops the ``` markers.
+    if (!blocks.length && text.trim()) return splitLoose(String(text).replace(/\r\n?/g, '\n'));
 
     const out = [];
     for (const b of blocks) {
@@ -103,6 +103,63 @@
       if (kind === 'svg' && path && !path.endsWith('.svg')) path = null;
       out.push({ path, body, kind, labeled: Boolean(named) });
     }
+    return out;
+  }
+
+
+  // Finds the files in an answer with no ``` markers: pictures by their <svg> tags, theme.json by its
+  // balanced braces, and theme.css as the style rules left over. File names come from the line or two
+  // just above each one, where AI chats show them.
+  function splitLoose(text) {
+    const taken = []; // [start, end) ranges already used
+    const out = [];
+    const nameBefore = (start) => {
+      const before = text.slice(Math.max(0, start - 160), start).split('\n').slice(-4).reverse();
+      for (const line of before) { const m = line.match(FILE_RE); if (m) return m[1]; }
+      return null;
+    };
+    for (const m of text.matchAll(/(?:<\?xml[^>]*>\s*)?<svg[\s>][\s\S]*?<\/svg>/gi)) {
+      taken.push([m.index, m.index + m[0].length]);
+      const named = nameBefore(m.index);
+      const path = named && cleanPath(named);
+      out.push({ path: path && path.endsWith('.svg') ? path : null, body: m[0].trim(), kind: 'svg', labeled: Boolean(named) });
+    }
+    const free = (i) => !taken.some(([a, b]) => i >= a && i < b);
+    // theme.json: a { at the start of a line, followed by a "key":, closed by its matching }.
+    const jsonStart = /(^|\n)[ \t]*\{\s*"[\w.-]+"\s*:/g;
+    let jm;
+    while ((jm = jsonStart.exec(text))) {
+      const start = text.indexOf('{', jm.index);
+      if (!free(start)) continue;
+      let depth = 0, inStr = false, end = -1;
+      for (let i = start; i < text.length; i++) {
+        const ch = text[i];
+        if (inStr) { if (ch === '\\') i++; else if (ch === '"') inStr = false; continue; }
+        if (ch === '"') inStr = true;
+        else if (ch === '{') depth++;
+        else if (ch === '}' && --depth === 0) { end = i + 1; break; }
+      }
+      if (end < 0) continue;
+      const body = text.slice(start, end);
+      if (!/"(name|text|art|mascot)"\s*:/.test(body)) continue;
+      taken.push([start, end]);
+      out.push({ path: 'theme.json', body, kind: 'json', labeled: false });
+      jsonStart.lastIndex = end;
+    }
+    // theme.css: in each stretch of text that's left, from the first rule-like line to the last }.
+    taken.sort((a, b) => a[0] - b[0]);
+    const css = [];
+    let pos = 0;
+    for (const [a, b] of taken.concat([[text.length, text.length]])) {
+      const piece = text.slice(pos, a);
+      pos = Math.max(pos, b);
+      const startM = piece.match(/(^|\n)[ \t]*(@import\b|:root\b|\/\*|[.#*\[\w][^\n{};]*\{)/);
+      const end = piece.lastIndexOf('}');
+      if (!startM || end < startM.index) continue;
+      const chunk = piece.slice(startM.index, end + 1).trim();
+      if (/:\s*[^;{}]+;?/.test(chunk)) css.push(chunk);
+    }
+    if (css.length) out.unshift({ path: 'theme.css', body: css.join('\n\n'), kind: 'css', labeled: false });
     return out;
   }
 
@@ -355,9 +412,25 @@
   }
 
   function onPaste() {
+    clearTimeout(timer);
+    try { readPaste(); } catch (err) {
+      console.error('[theme lab]', err);
+      status("Something went wrong reading that. Try copying the AI's answer again with its Copy button, then paste it here.", 'bad');
+    }
+  }
+
+  function status(message, level) {
+    const node = $('#paste-status');
+    node.textContent = message;
+    node.className = 'paste-status' + (level ? ' is-' + level : '');
+    node.hidden = !message;
+  }
+
+  function readPaste() {
     const text = paste.value;
     store.set(DRAFT_KEY, text);
     if (!text.trim()) {
+      status('');
       built = null;
       $('#found').replaceChildren();
       $('#found-empty').hidden = false;
@@ -376,9 +449,16 @@
       : 'Once a theme is pasted and looks right, you can download it here.';
     if (!built) {
       // Still show the colors while theme.json gets fixed.
-      if (result.blocked && result.theme.css) { current = { source: 'paste' }; showing(result.name, true); send(result.theme); }
+      if (result.blocked && result.theme.css) {
+        current = { source: 'paste' }; showing(result.name, true); send(result.theme);
+        status('The preview shows the colors, but theme.json has a typo. See step 2.', 'warn');
+      } else {
+        status("Couldn't find a theme in what you pasted. Copy the AI's whole answer (its Copy button works best) and paste it here.", 'bad');
+      }
       return;
     }
+    const pics = Object.keys(built.theme.art).length;
+    status('Preview updated with "' + built.name + '"' + (pics ? ' and ' + pics + (pics === 1 ? ' picture' : ' pictures') : '') + '.', 'ok');
     $('#folder-name').textContent = built.folder;
     $('#csv-line').value = csvField(built.name) + ',' + built.folder;
     $('#share-note').textContent = '';
@@ -390,6 +470,7 @@
   const csvField = (s) => (/[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s);
 
   paste.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(onPaste, 350); });
+  $('#show').addEventListener('click', onPaste);
   $('#clear').addEventListener('click', () => { paste.value = ''; history.replaceState(null, '', location.pathname + location.search); onPaste(); paste.focus(); });
 
 
