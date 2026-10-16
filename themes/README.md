@@ -28,11 +28,15 @@ theme: 'rpg-shop',
 
 ## Making your own theme
 
+**The easy way: ask an AI.** Describe the look you want to Claude, ChatGPT or another AI, and preview its answer in the [Theme Lab](https://nicolenadine.github.io/wishlist/theme-lab.html). No code needed. See [Make a theme with AI](../docs/make-a-theme-with-ai.md).
+
+**By hand:**
+
 1. Copy the `starter` folder and rename the copy, using lowercase letters, numbers and dashes (for example `cozy-cabin`).
 2. In `theme.css`, change the colors and fonts. Every one has a comment saying where it shows up.
 3. In `theme.json`, give it a name and change any wording you like (see the list below).
 4. Optionally add art and a mascot (see below).
-5. Preview it with `?theme=your-folder-name`.
+5. Preview it with `?theme=your-folder-name`, or paste the files into the [Theme Lab](../theme-lab.html) to check them before you commit.
 6. Add a line to `themes.csv` with its name and folder, like `Cozy Cabin,cozy-cabin`. That's what lets the sheet's Theme dropdown offer it by name.
 
 ## Share your theme with everyone

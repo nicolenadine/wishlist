@@ -86,7 +86,7 @@ Pick one from the **Theme** dropdown in your sheet's Settings tab. To try one fi
   </tr>
   <tr>
     <td valign="top"><a href="https://nicolenadine.github.io/wishlist/?theme=starter"><img src="docs/media/themes/starter-thumb.webp" alt="Starter theme"></a><br><b>Starter</b><br><sub>Plain and simple. The one to copy when you make your own.</sub></td>
-    <td colspan="2" valign="middle" align="center"><b>Make your own</b><br><sub>Colors, fonts, wording, art and a mascot, with no JavaScript.<br>See the <a href="themes/README.md">themes guide</a>, then <a href="themes/README.md#share-your-theme-with-everyone">share it</a><br>with a pull request so everyone can use it (optional).</sub></td>
+    <td colspan="2" valign="middle" align="center"><b>Make your own</b><br><sub>Describe it to an AI and preview it in the <a href="https://nicolenadine.github.io/wishlist/theme-lab.html">Theme Lab</a>, no code needed:<br><a href="docs/make-a-theme-with-ai.md">Make a theme with AI</a>. Or build one by hand with the <a href="themes/README.md">themes guide</a>,<br>and <a href="themes/README.md#share-your-theme-with-everyone">share it</a> so everyone can use it (optional).</sub></td>
   </tr>
 </table>
 
@@ -195,6 +195,9 @@ app.js              loads the sheet and Settings tab, filters, cards, gift helpe
 index.html          page structure
 styles.css          shared layout; colors and fonts come from the theme
 themes/             one folder per theme (CSS, JSON and SVG only), plus themes.csv (the theme list the sheet's dropdown reads)
+theme-lab.html      the Theme Lab: paste a theme and preview it on sample items (frames index.html?lab)
+theme-lab/          the lab's script and sample item pictures
+skills/             wishlist-theme/SKILL.md, the theme-making instructions for Claude and other AIs
 sheet/              the sheet's optional Wishlist menu (Apps Script) and updates.json, the list of sheet changes it applies
 scripts/            daily price check, run by .github/workflows/update-prices.yml
 wishlist-images/    optional photos hosted in the repo
@@ -207,7 +210,7 @@ docs/               guides and the images in this README
 python3 -m http.server 8000
 ```
 
-Then open http://localhost:8000. Handy URL switches: `?check` shows the setup report, `?theme=name` previews a theme, `?test-claims` fakes purchases without sending anything, and `?shield` / `?shield=off` turn the spoiler shield on and off.
+Then open http://localhost:8000. Handy URL switches: `?check` shows the setup report, `?theme=name` previews a theme, `?test-claims` fakes purchases without sending anything, `?shield` / `?shield=off` turn the spoiler shield on and off, and `?lab` (only inside the Theme Lab's frame) shows sample items with a theme sent by the lab.
 
 **Sheet changes are always additive and optional.** A change must never break an existing sheet or require copying it again: new settings fall back to a default when their row is missing, and new columns are optional. Any change that touches the sheet gets an entry in [`sheet/updates.json`](sheet/updates.json), so the sheet's **Wishlist → Check for updates** can apply it, and in [docs/sheet-changes.md](docs/sheet-changes.md) for people adding it by hand (the format is in a comment at the bottom). Updates are data, not code: each one is a list of actions that [`sheet/Wishlist.gs`](sheet/Wishlist.gs) already knows (`settingRow`, `formulaTab`, `settingDropdown`). A new kind of action means a new `SCRIPT_VERSION` in the script and a matching `menuVersion` in `updates.json`, and new Settings rows go in `SETTING_NAMES` and `SETTING_LABELS` in `app.js` so `?check` can suggest them.
 
