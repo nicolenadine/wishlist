@@ -462,6 +462,23 @@
     } catch (err) { button.textContent = "Couldn't load them"; }
   });
 
+  // The same instructions packaged the way Claude's Settings → Skills upload expects: a zip with the skill folder.
+  $('#skill-zip').addEventListener('click', async (e) => {
+    const button = e.currentTarget;
+    try {
+      const res = await fetch('skills/wishlist-theme/SKILL.md', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      saveBlob(makeZip([['wishlist-theme/SKILL.md', await res.text()]]), 'wishlist-theme-skill.zip');
+    } catch (err) { button.textContent = "Couldn't load it"; }
+  });
+
+  function saveBlob(blob, name) {
+    const url = URL.createObjectURL(blob);
+    const a = el('a', { href: url, download: name });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  }
+
   $('#copy-csv').addEventListener('click', (e) => copy($('#csv-line').value, e.currentTarget, 'Copied'));
 
 
@@ -519,10 +536,7 @@
     if (built.theme.css) entries.push([f + '/theme.css', built.theme.css.trim() + '\n']);
     entries.push([f + '/theme.json', JSON.stringify(built.theme.json, null, 2) + '\n']);
     for (const [p, svg] of Object.entries(built.theme.art)) entries.push([f + '/' + p, svg.trim() + '\n']);
-    const url = URL.createObjectURL(makeZip(entries));
-    const a = el('a', { href: url, download: f + '.zip' });
-    document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    saveBlob(makeZip(entries), f + '.zip');
   });
 
 
