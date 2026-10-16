@@ -8,6 +8,7 @@
  *   ?shield        turn the spoiler shield ON in this browser (remembered). Claims are never loaded.
  *   ?shield=off    turn the spoiler shield off again in this browser.
  *   ?test-claims   use made-up claims and don't send anything (works even with the shield on).
+ *   ?lab           used by theme-lab.html: sample items, nothing sent, theme supplied by the lab page.
  */
 (() => {
   'use strict';
@@ -503,7 +504,9 @@
     else store.set(SHIELD_KEY, 'on');
   }
   const SHIELD = store.get(SHIELD_KEY) === 'on';
-  const TEST = params.has('test-claims');
+  // ?lab: the theme lab (theme-lab.html) shows this page in a frame, with sample items and a pasted theme.
+  const LAB = params.has('lab') && window.parent !== window;
+  const TEST = params.has('test-claims') || LAB;
   const c = CONFIG.claims;
   ['itemField', 'qtyField', 'refField'].forEach((k) => { if (!c[k]) c[k] = CONFIG.templateClaimFields[k] || ''; });
   let CLAIMS_CONFIGURED = Boolean(c.csvUrl && c.formUrl && c.itemField && c.qtyField);
@@ -513,7 +516,7 @@
     CLAIMS_CONFIGURED = Boolean(c.csvUrl && c.formUrl && c.itemField && c.qtyField);
     CLAIMS_ON = TEST || (!SHIELD && CLAIMS_CONFIGURED);
   };
-  const pendingKey = TEST ? PENDING_KEY + '-test' : PENDING_KEY;
+  const pendingKey = LAB ? PENDING_KEY + '-lab' : TEST ? PENDING_KEY + '-test' : PENDING_KEY;
 
   const state = {
     items: [],
@@ -1264,7 +1267,7 @@
   }
 
   /* One-time tip pointing at the first info button. Gone for good once any info button is tapped or the tip is closed. */
-  const HINT_KEY = 'wishlist-info-hint-seen';
+  const HINT_KEY = LAB ? 'wishlist-lab-hint-seen' : 'wishlist-info-hint-seen';
   function dismissHint() {
     store.set(HINT_KEY, '1');
     document.querySelectorAll('.info.has-hint').forEach((w) => {
@@ -1297,6 +1300,7 @@
   }
 
   function renderModeBadge() {
+    if (LAB) return;
     const badge = $('#mode-badge');
     if (TEST) {
       badge.hidden = false;
@@ -1510,7 +1514,78 @@
     if (CHECK.config.broken) console.warn('[wishlist] config.js has a typo near line ' + CHECK.config.line + (CHECK.config.rescued ? '; using the sheet link from it anyway.' : '.'));
   }
 
+  /* ---------- theme lab ----------
+   * theme-lab.html shows this page in a frame with ?lab. It uses the made-up items below instead of a
+   * sheet, never sends anything, and takes its theme from the lab page instead of a theme folder.
+   * The items are picked to show every kind of card: starred, on sale, bought, partly bought,
+   * gift cards, a very long name and a missing photo. */
+  const LAB_SHEET = [
+    'name,price,size,color,quantity,starred,shop,category,image,notes,link',
+    'Hand-thrown ceramic mug,34,12 oz,Speckled oat,1,TRUE,Etsy,Kitchen,mug.svg,"The bigger one, not the espresso cup.",https://www.etsy.com/',
+    'Cable-knit scarf,48,One size,Forest green,1,TRUE,Etsy,Clothing,scarf.svg,,https://www.etsy.com/',
+    'Wireless headphones,129.99,,Matte black,1,FALSE,Amazon,Tech,headphones.svg,Over-ear please,https://www.amazon.com/',
+    '"The Complete Illustrated Field Guide to Mushrooms, Mosses and Lichens of the Pacific Northwest",42,,,1,FALSE,Bookshop,Books,book.svg,Hardcover,https://bookshop.org/',
+    'Little potted succulent,16,,,2,FALSE,Local nursery,Home,plant.svg,,',
+    'Beeswax candle set,24,,Honey,1,FALSE,Etsy,Home,candle.svg,,https://www.etsy.com/',
+    'Cooperative board game,59.99,,,1,TRUE,Target,Games,game.svg,For 2 to 4 players,https://www.target.com/',
+    'Wool hiking socks,22,M,Heather gray,3,FALSE,REI,Clothing,socks.svg,,https://www.rei.com/',
+    'Brass reading lamp,85,,Brass,1,FALSE,Amazon,Home,,,https://www.amazon.com/',
+    'Pour-over coffee kettle,45,,Matte white,1,FALSE,Amazon,Kitchen,kettle.svg,,https://www.amazon.com/',
+    'Bookshop gift card,From $25,,,1,TRUE,Bookshop,Gift Cards,giftcard.svg,,https://bookshop.org/',
+    'Corner cafe gift card,Any amount,,,1,FALSE,Corner cafe,Gift Cards,,,',
+  ].join('\n');
+  const LAB_CLAIMS = 'Timestamp,item,quantity,ref\n,Beeswax candle set,1,lab-1\n,Little potted succulent,1,lab-2';
+
+  function loadLab() {
+    CONFIG.ownerName = 'Sam';
+    CONFIG.imageFolder = 'theme-lab/samples/';
+    state.items = toItems(parseCSV(LAB_SHEET));
+    groupShops(state.items);
+    const { totals, refs } = readClaims(parseCSV(LAB_CLAIMS));
+    state.sheetClaims = totals;
+    state.sheetRefs = refs;
+    applyPrices({}); // test mode puts a made-up sale on the third item
+    applyClaims();
+    wire();
+    buildFilters();
+    state.budget = '80';
+    $('#gp-budget').value = '80';
+    window.addEventListener('message', (e) => {
+      if (e.origin !== window.location.origin || e.source !== window.parent) return;
+      if (e.data && e.data.type === 'wishlist-lab:theme') applyLabTheme(e.data.theme || {});
+    });
+    window.parent.postMessage({ type: 'wishlist-lab:ready' }, window.location.origin);
+  }
+
+  // A theme from the lab: { css: '…', json: {…}, art: { 'art/hero-scene.svg': '<svg…' } }.
+  // Art goes through the same cleaning as theme folders do.
+  function applyLabTheme(theme) {
+    let style = document.getElementById('theme-css');
+    if (!style || style.tagName !== 'STYLE') {
+      const fresh = document.createElement('style');
+      fresh.id = 'theme-css';
+      if (style) style.replaceWith(fresh); else document.head.append(fresh);
+      style = fresh;
+    }
+    style.textContent = String(theme.css || '');
+    const data = theme.json && typeof theme.json === 'object' ? theme.json : {};
+    THEME.text = data.text && typeof data.text === 'object' ? { ...data.text } : {};
+    THEME.mascot = data.mascot && typeof data.mascot === 'object' ? data.mascot : null;
+    THEME.art = {};
+    const files = theme.art || {};
+    Object.entries(data.art && typeof data.art === 'object' ? data.art : {}).forEach(([slot, file]) => {
+      const markup = files[String(file).replace(/^\.?\//, '')];
+      const node = markup ? safeSvg(markup) : null;
+      if (node) THEME.art[slot] = node;
+    });
+    applyTheme();
+    renderStats();
+    render();
+    window.parent.postMessage({ type: 'wishlist-lab:applied' }, window.location.origin);
+  }
+
   async function init() {
+    if (LAB) { loadLab(); return; }
     await rescueConfig();
     try { await load(); } catch (err) { console.error('[wishlist]', err); }
     if (params.has('check')) renderCheck();

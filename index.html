@@ -26,6 +26,12 @@
      time this browser visited, then config.js. app.js reads the Settings tab and swaps the
      theme if it has changed. */
   (function () {
+    /* In the theme lab (theme-lab.html), the lab page supplies the theme instead of a folder. */
+    if (/[?&]lab(?:[=&]|$)/.test(location.search) && window.parent !== window) {
+      document.write('<style id="theme-css"></style>');
+      setTimeout(function () { document.documentElement.classList.remove('theme-loading'); }, 4000);
+      return;
+    }
     var cfg = window.WISHLIST_CONFIG || {};
     var asked = (location.search.match(/[?&]theme=([\w-]+)/) || [])[1];
     var remembered = null;
@@ -38,7 +44,7 @@
     setTimeout(function () { document.documentElement.classList.remove('theme-loading'); }, 4000);
   })();
 </script>
-<script src="app.js?v=20261015e" defer></script>
+<script src="app.js?v=20261016a" defer></script>
 </head>
 <body>
 
