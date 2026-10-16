@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme Lab</title>
+<meta name="description" content="Paste a wishlist theme from your AI and see it on a sample shop right away.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
+<style>
+  :root {
+    --mat: #3E5B55;
+    --mat-line: rgba(255, 255, 255, 0.07);
+    --mat-line-major: rgba(255, 255, 255, 0.14);
+    --paper: #F7F8F6;
+    --paper-edge: #DCE1DE;
+    --ink: #18211F;
+    --ink-soft: #56615E;
+    --well: #FFFFFF;
+    --marker: #F2C230;
+    --marker-deep: #D9A916;
+    --ok: #1F7A4D;
+    --warn: #A15C07;
+    --bad: #B42318;
+    --focus: #1D6FE0;
+    --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    --sans: 'Schibsted Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: var(--sans); font-size: 15px; line-height: 1.5; color: var(--ink);
+    background-color: var(--mat);
+    background-image:
+      linear-gradient(var(--mat-line-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--mat-line-major) 1px, transparent 1px),
+      linear-gradient(var(--mat-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  a { color: inherit; }
+  button, select, textarea, input { font: inherit; color: inherit; }
+
+  .lab { display: grid; grid-template-columns: minmax(340px, 400px) 1fr; height: 100vh; }
+
+  /* ---------- the paper panel ---------- */
+  .panel {
+    background: var(--paper); border-right: 1px solid var(--paper-edge);
+    overflow-y: auto; padding: 22px 22px 40px;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
+    position: relative; z-index: 1;
+  }
+  .masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .masthead h1 { margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .masthead a { font-size: 14px; color: var(--ink-soft); white-space: nowrap; }
+  .lede { margin: 8px 0 0; color: var(--ink-soft); }
+
+  .step { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--paper-edge); }
+  .step-head { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
+  .step-num {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ink); color: var(--paper); font-size: 13px; font-weight: 800;
+  }
+  .step h2 { margin: 0; font-size: 18px; font-weight: 700; }
+  .step p { margin: 0 0 10px; }
+  .soft { color: var(--ink-soft); font-size: 14px; }
+
+  textarea {
+    width: 100%; min-height: 200px; resize: vertical; padding: 12px;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
+    background: var(--well); border: 1.5px solid var(--paper-edge); border-radius: 8px;
+  }
+  textarea:focus { border-color: var(--ink); outline: none; }
+  textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 40px; padding: 0 14px; border-radius: 8px; cursor: pointer;
+    font-weight: 700; font-size: 14.5px; text-decoration: none;
+    background: var(--well); border: 1.5px solid var(--paper-edge); color: var(--ink);
+  }
+  .btn:hover { border-color: var(--ink-soft); }
+  .btn-main { background: var(--marker); border-color: var(--marker-deep); }
+  .btn-main:hover { background: #F5CD4F; border-color: var(--ink); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-quiet { background: transparent; border-color: transparent; color: var(--ink-soft); padding: 0 8px; }
+  .btn-quiet:hover { color: var(--ink); border-color: transparent; text-decoration: underline; }
+
+  details.remix { margin-top: 14px; border: 1.5px dashed var(--paper-edge); border-radius: 8px; padding: 10px 12px; }
+  details.remix summary { cursor: pointer; font-weight: 600; }
+  details.remix p { margin: 8px 0; font-size: 14px; color: var(--ink-soft); }
+  select { min-height: 40px; padding: 0 10px; border-radius: 8px; border: 1.5px solid var(--paper-edge); background: var(--well); }
+
+  /* found files */
+  .found { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .found li { display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; font-size: 14.5px; }
+  .found .mark { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; color: #fff; margin-top: 1px; }
+  .found .ok .mark { background: var(--ok); }
+  .found .warn .mark { background: var(--warn); }
+  .found .bad .mark { background: var(--bad); }
+  .found .info .mark { background: var(--ink-soft); }
+  .found code { font-family: var(--mono); font-size: 13px; background: #ECEFEC; padding: 0 4px; border-radius: 4px; }
+  .found small { display: block; color: var(--ink-soft); font-size: 13.5px; }
+
+  /* swatch strip: the theme's own colors, read from the preview */
+  .swatches { display: grid; grid-template-columns: repeat(6, 1fr); margin-top: 14px; border-radius: 8px; overflow: hidden; border: 1.5px solid var(--paper-edge); }
+  .swatch { height: 46px; position: relative; }
+  .swatch span {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 2px 4px;
+    font-size: 11px; font-weight: 600; text-align: center; background: rgba(247, 248, 246, 0.9); color: var(--ink);
+  }
+  .read-head { margin: 16px 0 6px; font-weight: 700; }
+  .read { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .read li { display: flex; gap: 8px; align-items: baseline; font-size: 14.5px; }
+  .read .pair { flex: none; width: 34px; height: 22px; border-radius: 5px; display: grid; place-items: center; font-weight: 800; font-size: 13px; border: 1px solid rgba(0,0,0,0.12); }
+  .read .bad strong { color: var(--bad); }
+  .read .warn strong { color: var(--warn); }
+  .read-ok { color: var(--ok); font-weight: 600; font-size: 14.5px; margin-top: 6px; }
+
+  /* save */
+  .field { display: grid; gap: 4px; margin: 10px 0; }
+  .field label { font-weight: 600; font-size: 14px; }
+  .copyline { display: flex; gap: 6px; }
+  .copyline input {
+    flex: 1; min-width: 0; min-height: 40px; padding: 0 10px; font-family: var(--mono); font-size: 13px;
+    border: 1.5px solid var(--paper-edge); border-radius: 8px; background: var(--well);
+  }
+  ol.install { margin: 12px 0 0; padding-left: 20px; display: grid; gap: 8px; }
+  ol.install li { padding-left: 2px; }
+  .note { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
+
+  /* ---------- the preview on the mat ---------- */
+  .stage { display: grid; grid-template-rows: auto 1fr; min-width: 0; min-height: 0; }
+  .stage-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 22px; color: #F1F5F3; }
+  .showing { font-weight: 600; }
+  .showing em { font-style: normal; color: var(--marker); }
+  .toggle { display: inline-flex; background: rgba(0, 0, 0, 0.25); border-radius: 9px; padding: 3px; }
+  .toggle button {
+    border: 0; background: transparent; color: #E3EAE7; min-height: 34px; padding: 0 14px; border-radius: 7px;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .toggle button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
+  .viewport { position: relative; overflow: auto; padding: 0 22px 22px; min-height: 0; }
+  .device {
+    margin: 0 auto; background: #fff; border-radius: 10px; overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.2);
+    transform-origin: top left;
+  }
+  .device.is-phone { border-radius: 28px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35), 0 0 0 10px #1B2220; }
+  .device iframe { display: block; border: 0; background: #fff; }
+  .scaler { margin: 0 auto; }
+
+  @media (max-width: 860px) {
+    .lab { grid-template-columns: 1fr; height: auto; }
+    .panel { box-shadow: none; border-right: 0; border-bottom: 1px solid var(--paper-edge); }
+    .viewport { overflow: visible; }
+    .toggle { display: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .device { transition: box-shadow 0.2s; }
+  }
+</style>
+</head>
+<body>
+<div class="lab">
+  <aside class="panel">
+    <div class="masthead">
+      <h1>Theme lab</h1>
+      <a href="./">Back to the shop</a>
+    </div>
+    <p class="lede">Paste the theme your AI made, and the sample shop changes to match. Nothing is saved or published until you add it to your copy on GitHub.</p>
+
+    <section class="step" aria-labelledby="s1">
+      <div class="step-head"><span class="step-num" aria-hidden="true">1</span><h2 id="s1">Paste the AI's answer</h2></div>
+      <p class="soft">Paste the whole thing, chat text and all. The lab picks out the theme files. Don't have one yet? <a href="docs/make-a-theme-with-ai.md">Here's how to ask an AI for one.</a></p>
+      <label for="paste" class="soft" hidden>The AI's answer</label>
+      <textarea id="paste" spellcheck="false" placeholder="Paste here. For example:&#10;&#10;```css theme.css&#10;:root { --page: #FFF7F0; … }&#10;```&#10;```json theme.json&#10;{ &quot;name&quot;: &quot;Cozy Cabin&quot;, … }&#10;```"></textarea>
+      <div class="row">
+        <button type="button" class="btn btn-quiet" id="clear">Clear</button>
+      </div>
+      <details class="remix">
+        <summary>Change one of the built-in themes instead</summary>
+        <p>Pick a theme to see it here. Copy its files, paste them to your AI, and say what you'd like different.</p>
+        <div class="row">
+          <label for="builtin" hidden>Built-in theme</label>
+          <select id="builtin"></select>
+          <button type="button" class="btn" id="copy-builtin">Copy its files</button>
+        </div>
+      </details>
+    </section>
+
+    <section class="step" aria-labelledby="s2">
+      <div class="step-head"><span class="step-num" aria-hidden="true">2</span><h2 id="s2">Check what was found</h2></div>
+      <p class="soft" id="found-empty">Paste an answer to see which files the lab found.</p>
+      <ul class="found" id="found"></ul>
+      <div id="colors" hidden>
+        <div class="swatches" id="swatches" aria-label="The theme's main colors"></div>
+        <div class="read-head">Easy to read?</div>
+        <ul class="read" id="read"></ul>
+        <div class="read-ok" id="read-ok"></div>
+      </div>
+    </section>
+
+    <section class="step" aria-labelledby="s3">
+      <div class="step-head"><span class="step-num" aria-hidden="true">3</span><h2 id="s3">Save it</h2></div>
+      <p class="soft" id="save-empty">Once a theme is pasted and looks right, you can download it here.</p>
+      <div id="save" hidden>
+        <div class="row" style="margin-top:0">
+          <button type="button" class="btn btn-main" id="download">Download theme folder</button>
+          <button type="button" class="btn" id="share">Copy a preview link</button>
+        </div>
+        <p class="note" id="share-note" role="status"></p>
+        <ol class="install">
+          <li>Unzip the download. You'll get a folder called <strong id="folder-name"></strong>.</li>
+          <li>On GitHub, open your copy of the wishlist, go into the <strong>themes</strong> folder, click <strong>Add file → Upload files</strong>, drag the folder in, and click <strong>Commit changes</strong>.</li>
+          <li>Open <strong>themes.csv</strong> in the same folder, click the pencil, add this line at the end, and commit:
+            <div class="copyline" style="margin-top:6px">
+              <input id="csv-line" readonly aria-label="Line for themes.csv">
+              <button type="button" class="btn" id="copy-csv">Copy</button>
+            </div>
+          </li>
+          <li>Pick it from the <strong>Theme</strong> dropdown in your sheet's Settings tab. Your site switches within about 5 minutes.</li>
+        </ol>
+      </div>
+    </section>
+  </aside>
+
+  <main class="stage">
+    <div class="stage-bar">
+      <div class="showing" id="showing" aria-live="polite">Showing <em>Starter</em></div>
+      <div class="toggle" role="group" aria-label="Preview size">
+        <button type="button" data-size="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" data-size="phone" aria-pressed="false">Phone</button>
+      </div>
+    </div>
+    <div class="viewport" id="viewport">
+      <div class="scaler" id="scaler">
+        <div class="device" id="device">
+          <iframe id="preview" title="Preview of the wishlist shop with your theme" src="index.html?lab"></iframe>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="theme-lab/lab.js?v=20261016a"></script>
+</body>
+</html>

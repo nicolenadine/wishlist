@@ -1552,7 +1552,9 @@
     $('#gp-budget').value = '80';
     window.addEventListener('message', (e) => {
       if (e.origin !== window.location.origin || e.source !== window.parent) return;
-      if (e.data && e.data.type === 'wishlist-lab:theme') applyLabTheme(e.data.theme || {});
+      const type = e.data && e.data.type;
+      if (type === 'wishlist-lab:theme') applyLabTheme(e.data.theme || {});
+      else if (type === 'wishlist-lab:hello') window.parent.postMessage({ type: 'wishlist-lab:ready' }, window.location.origin);
     });
     window.parent.postMessage({ type: 'wishlist-lab:ready' }, window.location.origin);
   }
