@@ -39,7 +39,9 @@ If a photo can't load, the card shows a friendly placeholder instead.
 
 Set the row's `category` to `gift card` and put the smallest amount in `price` (like `From $25`), or leave it blank for any amount.
 
-Gift cards show "From $25" or "Any amount", have no "bought it" button (several people can give one), always pass the price filter, and are listed after regular items. Tick `starred` on one and it's listed with your other favorites instead. The gift helper uses one to fill leftover budget after picking items.
+Gift cards show "From $25" or "Any amount", have no "bought it" button (several people can give one), always pass the price filter, and are listed after regular items. Tick `starred` on one and it's listed with your other favorites instead. The gift helper uses one to fill leftover budget after picking items. Gift cards don't get the tax & shipping buffer, since they're usually tax-free and sent by email, so the card gets everything left over.
+
+Gift-givers who'd rather not give a gift card can tick **Hide gift cards** in the filters (it only shows up when your list has gift cards). That takes them off the shelves, but the gift helper may still suggest one to use up the last few dollars after real gifts.
 
 ## The Settings tab
 

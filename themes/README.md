@@ -81,6 +81,7 @@ List only the words you want to change; everything else uses the default.
 | `stat.shops` | {n} shop \| {n} shops |
 | `starred` | Starred |
 | `starredOnly` | Starred only |
+| `hideGiftCards` | Hide gift cards |
 | `starBadge` | Starred: most wanted |
 | `searchLabel` | Search |
 | `searchPlaceholder` | Search the list |
@@ -168,6 +169,7 @@ List only the words you want to change; everything else uses the default.
 | `planner.reserve` | + ~{amount} est. tax & shipping |
 | `planner.spare` | {amount} spare |
 | `planner.bufferHint` | About {pct}% of the budget is set aside as a rough guess for tax and shipping. Real costs vary by shop and location, so check the total at checkout. |
+| `planner.giftCardNoTax` | Gift cards skip this, since they are usually tax-free and sent by email. |
 | `planner.onlyFit` | Only {n} of {want} gifts fit this budget with the current filters. |
 | `planner.maxBudget` | The planner can only count up to {amount} at a time. |
 | `planner.claimHint` | Bought one? Mark it on its card so nobody doubles up. |
