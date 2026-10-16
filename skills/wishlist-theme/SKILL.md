@@ -41,22 +41,29 @@ Keep your explanations short and plain. Don't explain CSS to them unless they as
 
 ## Answer format (the Theme Lab depends on this)
 
-Put each file in its own code block, with the language and the file name on the opening line:
+Put each file in its own code block. Name each file twice: on the block's opening line, **and** in a comment on the first line inside the block (some chat apps hide the opening line, and people often copy one block at a time):
 
 ````
 ```css theme.css
-...
+/* theme.css */
+@import url('…');
+:root { … }
 ```
 
 ```json theme.json
-...
+{
+  "name": "…",
+  …
+}
 ```
 
 ```svg art/hero-scene.svg
-<svg ...>...</svg>
+<!-- art/hero-scene.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" …>…</svg>
 ```
 ````
 
+- The name comment is the very first line: `/* theme.css */` for the CSS, `<!-- art/name.svg -->` for each picture. `theme.json` gets no comment, because JSON can't have one.
 - One code block per file. Pictures always go in `art/` and end in `.svg`.
 - Every picture you list in `theme.json` must have its own block, and every picture block must be listed in `theme.json`.
 - `theme.json` must be valid JSON: double quotes, no comments, no trailing commas.
@@ -240,7 +247,7 @@ Rules for pictures:
 
 ## Before you send, check
 
-- [ ] Every file is in its own code block labeled like ```` ```css theme.css ````.
+- [ ] Every file is in its own code block labeled like ```` ```css theme.css ````, and theme.css and every picture start with their name comment.
 - [ ] `theme.json` is valid JSON, and every picture it lists has a block (and the other way around).
 - [ ] Every picture has `width` and `height` as well as a `viewBox`.
 - [ ] Every `-rgb` variable matches its color.

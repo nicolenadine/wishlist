@@ -68,6 +68,10 @@
     return null;
   }
 
+  // A file's name in a comment on its own first line: /* theme.css */ or <!-- art/portrait.svg -->.
+  // The skill asks for this because copying one code block at a time loses everything around it.
+  const nameComment = (body) => (body.match(/^\s*(?:\/\*|<!--)\s*((?:[\w.-]+\/)*[\w.-]+\.(?:css|json|svg))\s*(?:\*\/|-->)/i) || [])[1] || null;
+
   // Returns { blocks: [{ path, body, labeled }], unlabeledSvgs: [...] }
   function splitAnswer(text) {
     const lines = String(text).replace(/\r\n?/g, '\n').split('\n');
@@ -97,7 +101,7 @@
       if (!body) continue;
       const kind = guessKind(body);
       // A file name in the block's label, or on the line just above it ("**theme.css**", "File: art/x.svg").
-      const named = (b.info.match(FILE_RE) || [])[1] || (b.before.match(FILE_RE) || [])[1];
+      const named = (b.info.match(FILE_RE) || [])[1] || nameComment(body) || (b.before.match(FILE_RE) || [])[1];
       let path = named ? cleanPath(named) : null;
       if (!path && kind) path = kind === 'css' ? 'theme.css' : kind === 'json' ? 'theme.json' : null;
       if (kind === 'svg' && path && !path.endsWith('.svg')) path = null;
