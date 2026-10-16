@@ -141,6 +141,18 @@
     return new XMLSerializer().serializeToString(root);
   }
 
+  // A picture with a viewBox but no width or height gets them from the viewBox.
+  function withSize(markup) {
+    const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+    const root = doc.documentElement;
+    if (root.hasAttribute('width') && root.hasAttribute('height')) return markup;
+    const vb = String(root.getAttribute('viewBox') || '').trim().split(/[\s,]+/).map(Number);
+    if (vb.length !== 4 || !(vb[2] > 0 && vb[3] > 0)) return markup;
+    if (!root.hasAttribute('width')) root.setAttribute('width', String(vb[2]));
+    if (!root.hasAttribute('height')) root.setAttribute('height', String(vb[3]));
+    return new XMLSerializer().serializeToString(root);
+  }
+
   function buildTheme(text) {
     const notes = [];
     const note = (level, ...parts) => notes.push({ level, parts });
@@ -196,6 +208,7 @@
       const problem = svgProblem(markup);
       if (problem === 'bad') { note('bad', 'Picture ', code(path), " isn't a valid picture, so it's skipped."); continue; }
       if (problem === 'cleaned') { note('info', 'Picture ', code(path), ' had code in it, which was removed.'); markup = cleanSvg(markup); }
+      markup = withSize(markup); // some spots need a size on the picture itself, or it shrinks to nothing
       art[path] = markup;
       found += 1;
     }
@@ -438,6 +451,17 @@
     catch (err) { button.textContent = "Couldn't copy"; }
     setTimeout(() => { button.textContent = label; }, 1800);
   }
+  // The AI instructions: the same file Claude uses as a skill, ready to paste into any AI chat.
+  $('#copy-skill').addEventListener('click', async (e) => {
+    const button = e.currentTarget;
+    try {
+      const res = await fetch('skills/wishlist-theme/SKILL.md', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const body = (await res.text()).replace(/^---[\s\S]*?---\s*/, '');
+      await copy('Use these instructions to make a theme for my wishlist site. Ask me your questions first.\n\n' + body, button, 'Copied. Now paste it into your AI.');
+    } catch (err) { button.textContent = "Couldn't load them"; }
+  });
+
   $('#copy-csv').addEventListener('click', (e) => copy($('#csv-line').value, e.currentTarget, 'Copied'));
 
 
