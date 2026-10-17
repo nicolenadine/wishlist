@@ -41,22 +41,29 @@ Keep your explanations short and plain. Don't explain CSS to them unless they as
 
 ## Answer format (the Theme Lab depends on this)
 
-Put each file in its own code block, with the language and the file name on the opening line:
+Put each file in its own code block. Name each file twice: on the block's opening line, **and** in a comment on the first line inside the block (some chat apps hide the opening line, and people often copy one block at a time):
 
 ````
 ```css theme.css
-...
+/* theme.css */
+@import url('…');
+:root { … }
 ```
 
 ```json theme.json
-...
+{
+  "name": "…",
+  …
+}
 ```
 
 ```svg art/hero-scene.svg
-<svg ...>...</svg>
+<!-- art/hero-scene.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" …>…</svg>
 ```
 ````
 
+- The name comment is the very first line: `/* theme.css */` for the CSS, `<!-- art/name.svg -->` for each picture. `theme.json` gets no comment, because JSON can't have one.
 - One code block per file. Pictures always go in `art/` and end in `.svg`.
 - Every picture you list in `theme.json` must have its own block, and every picture block must be listed in `theme.json`.
 - `theme.json` must be valid JSON: double quotes, no comments, no trailing commas.
@@ -129,10 +136,13 @@ Bigger, easier text for older visitors: raise `body { font-size: 17px; }` and gi
 
 ### Traps to avoid
 
-- **A dark header.** If `--header` is dark and you make `.hero` text light, the welcome box (`.dialog`) and the header counts (`.stat`) still have light backgrounds, so their text disappears. Give them their own colors, for example `.dialog { color: var(--text); }` and `.stat { background: rgba(255,255,255,0.12); color: var(--on-dark); border-color: rgba(255,255,255,0.3); }`.
+- **A dark header.** If `--header` is dark and you make `.hero` text light, the welcome box (`.dialog`) and the header counts (`.stat`) still have light backgrounds, so their text disappears. Give them their own colors, for example `.dialog { color: var(--text); }` and `.stat { background: rgba(0,0,0,0.22); color: var(--on-dark); border-color: rgba(255,255,255,0.3); }`. A see-through white pill on a mid-tone header usually isn't dark enough for small light text.
 - **Text that's hard to read.** Every piece of text needs strong contrast with what's behind it: at least 4.5 to 1 for normal text, 3 to 1 for big headings. Pale text on a pale button and gold on cream are the usual mistakes. Check `.view` and `.loot-btn` especially.
 - **Starred cards.** `--star-card` sits behind the item name and price, so it must stay light enough (or dark enough) for `--text`.
 - **Background images.** Don't put photos or busy patterns behind text.
+- **Cutting off the star badge.** Each starred card has a badge that sits half outside its top corner. Never put `overflow: hidden` on `.card`; to round the photo, use `.photo { border-radius: …; }` instead.
+- **Squeezed buttons.** Cards are narrow and hold two buttons side by side (`.view` and `.loot-btn`). Keep `view` and `loot` to one or two short words, and let the buttons stack rather than wrap their words:
+  `.card-actions { width: 100%; flex-wrap: wrap; gap: 8px; } .card-actions > * { flex: 1 1 auto; justify-content: center; white-space: nowrap; }`
 
 
 ## theme.json
@@ -237,10 +247,11 @@ Rules for pictures:
 
 ## Before you send, check
 
-- [ ] Every file is in its own code block labeled like ```` ```css theme.css ````.
+- [ ] Every file is in its own code block labeled like ```` ```css theme.css ````, and theme.css and every picture start with their name comment.
 - [ ] `theme.json` is valid JSON, and every picture it lists has a block (and the other way around).
 - [ ] Every picture has `width` and `height` as well as a `viewBox`.
 - [ ] Every `-rgb` variable matches its color.
+- [ ] Nothing sets `overflow: hidden` on `.card`, and the card buttons can stack.
 - [ ] Text contrast is strong on the page, cards, starred cards, buttons, header, welcome box and header counts.
 - [ ] Wording is consistent everywhere.
 - [ ] Nothing copies someone else's characters, logos or art.

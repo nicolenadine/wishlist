@@ -90,6 +90,10 @@
   .btn-quiet { background: transparent; border-color: transparent; color: var(--ink-soft); padding: 0 8px; }
   .btn-quiet:hover { color: var(--ink); border-color: transparent; text-decoration: underline; }
 
+  .paste-status { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; font-size: 14px; font-weight: 600; background: #ECEFEC; }
+  .paste-status.is-ok { background: #E3F1E9; color: var(--ok); }
+  .paste-status.is-warn { background: #FBEFD9; color: var(--warn); }
+  .paste-status.is-bad { background: #FBE4E1; color: var(--bad); }
   details.remix { margin-top: 14px; border: 1.5px dashed var(--paper-edge); border-radius: 8px; padding: 10px 12px; }
   details.remix summary { cursor: pointer; font-weight: 600; }
   details.remix p { margin: 8px 0; font-size: 14px; color: var(--ink-soft); }
@@ -182,12 +186,14 @@
         <button type="button" class="btn btn-quiet" id="skill-zip">Or add them to Claude as a skill</button>
       </div>
       <p class="note" id="skill-note" role="status" hidden></p>
-      <p class="soft">Then paste the AI's whole answer here, chat text and all. The lab picks out the theme files.</p>
+      <p class="soft">Then copy the AI's whole answer (its Copy button works best), paste it here, and click <strong>Show it</strong>.</p>
       <label for="paste" class="soft" hidden>The AI's answer</label>
       <textarea id="paste" spellcheck="false" placeholder="Paste here. For example:&#10;&#10;```css theme.css&#10;:root { --page: #FFF7F0; … }&#10;```&#10;```json theme.json&#10;{ &quot;name&quot;: &quot;Cozy Cabin&quot;, … }&#10;```"></textarea>
       <div class="row">
+        <button type="button" class="btn btn-main" id="show">Show it</button>
         <button type="button" class="btn btn-quiet" id="clear">Clear</button>
       </div>
+      <p class="paste-status" id="paste-status" role="status" hidden></p>
       <details class="remix">
         <summary>Change one of the built-in themes instead</summary>
         <p>Pick a theme to see it here. Copy its files, paste them to your AI, and say what you'd like different.</p>
@@ -252,6 +258,6 @@
     </div>
   </main>
 </div>
-<script src="theme-lab/lab.js?v=20261016a"></script>
+<script src="theme-lab/lab.js?v=20261016f"></script>
 </body>
 </html>

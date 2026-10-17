@@ -68,6 +68,10 @@
     return null;
   }
 
+  // A file's name in a comment on its own first line: /* theme.css */ or <!-- art/portrait.svg -->.
+  // The skill asks for this because copying one code block at a time loses everything around it.
+  const nameComment = (body) => (body.match(/^\s*(?:\/\*|<!--)\s*((?:[\w.-]+\/)*[\w.-]+\.(?:css|json|svg))\s*(?:\*\/|-->)/i) || [])[1] || null;
+
   // Returns { blocks: [{ path, body, labeled }], unlabeledSvgs: [...] }
   function splitAnswer(text) {
     const lines = String(text).replace(/\r\n?/g, '\n').split('\n');
@@ -88,8 +92,8 @@
       }
     }
     if (open) blocks.push(open); // an unclosed last block still counts
-    // No code blocks at all: treat the whole paste as one file.
-    if (!blocks.length && text.trim()) blocks.push({ info: '', lines: lines, before: '' });
+    // No code blocks: the answer was probably copied by selecting it, which drops the ``` markers.
+    if (!blocks.length && text.trim()) return splitLoose(String(text).replace(/\r\n?/g, '\n'));
 
     const out = [];
     for (const b of blocks) {
@@ -97,12 +101,69 @@
       if (!body) continue;
       const kind = guessKind(body);
       // A file name in the block's label, or on the line just above it ("**theme.css**", "File: art/x.svg").
-      const named = (b.info.match(FILE_RE) || [])[1] || (b.before.match(FILE_RE) || [])[1];
+      const named = (b.info.match(FILE_RE) || [])[1] || nameComment(body) || (b.before.match(FILE_RE) || [])[1];
       let path = named ? cleanPath(named) : null;
       if (!path && kind) path = kind === 'css' ? 'theme.css' : kind === 'json' ? 'theme.json' : null;
       if (kind === 'svg' && path && !path.endsWith('.svg')) path = null;
       out.push({ path, body, kind, labeled: Boolean(named) });
     }
+    return out;
+  }
+
+
+  // Finds the files in an answer with no ``` markers: pictures by their <svg> tags, theme.json by its
+  // balanced braces, and theme.css as the style rules left over. File names come from the line or two
+  // just above each one, where AI chats show them.
+  function splitLoose(text) {
+    const taken = []; // [start, end) ranges already used
+    const out = [];
+    const nameBefore = (start) => {
+      const before = text.slice(Math.max(0, start - 160), start).split('\n').slice(-4).reverse();
+      for (const line of before) { const m = line.match(FILE_RE); if (m) return m[1]; }
+      return null;
+    };
+    for (const m of text.matchAll(/(?:<\?xml[^>]*>\s*)?<svg[\s>][\s\S]*?<\/svg>/gi)) {
+      taken.push([m.index, m.index + m[0].length]);
+      const named = nameBefore(m.index);
+      const path = named && cleanPath(named);
+      out.push({ path: path && path.endsWith('.svg') ? path : null, body: m[0].trim(), kind: 'svg', labeled: Boolean(named) });
+    }
+    const free = (i) => !taken.some(([a, b]) => i >= a && i < b);
+    // theme.json: a { at the start of a line, followed by a "key":, closed by its matching }.
+    const jsonStart = /(^|\n)[ \t]*\{\s*"[\w.-]+"\s*:/g;
+    let jm;
+    while ((jm = jsonStart.exec(text))) {
+      const start = text.indexOf('{', jm.index);
+      if (!free(start)) continue;
+      let depth = 0, inStr = false, end = -1;
+      for (let i = start; i < text.length; i++) {
+        const ch = text[i];
+        if (inStr) { if (ch === '\\') i++; else if (ch === '"') inStr = false; continue; }
+        if (ch === '"') inStr = true;
+        else if (ch === '{') depth++;
+        else if (ch === '}' && --depth === 0) { end = i + 1; break; }
+      }
+      if (end < 0) continue;
+      const body = text.slice(start, end);
+      if (!/"(name|text|art|mascot)"\s*:/.test(body)) continue;
+      taken.push([start, end]);
+      out.push({ path: 'theme.json', body, kind: 'json', labeled: false });
+      jsonStart.lastIndex = end;
+    }
+    // theme.css: in each stretch of text that's left, from the first rule-like line to the last }.
+    taken.sort((a, b) => a[0] - b[0]);
+    const css = [];
+    let pos = 0;
+    for (const [a, b] of taken.concat([[text.length, text.length]])) {
+      const piece = text.slice(pos, a);
+      pos = Math.max(pos, b);
+      const startM = piece.match(/(^|\n)[ \t]*(@import\b|:root\b|\/\*|[.#*\[\w][^\n{};]*\{)/);
+      const end = piece.lastIndexOf('}');
+      if (!startM || end < startM.index) continue;
+      const chunk = piece.slice(startM.index, end + 1).trim();
+      if (/:\s*[^;{}]+;?/.test(chunk)) css.push(chunk);
+    }
+    if (css.length) out.unshift({ path: 'theme.css', body: css.join('\n\n'), kind: 'css', labeled: false });
     return out;
   }
 
@@ -153,6 +214,34 @@
     return new XMLSerializer().serializeToString(root);
   }
 
+  // Pictures pasted without file names go to the spots that fit their size: three 64×64 pictures are
+  // the mascot, a 1200-wide one is the header scene, and so on. First exact sizes, then the closest shape.
+  const SLOT_SIZE = { heroSky: [420, 170], heroScene: [1200, 178], portrait: [46, 46], mascotIdle: [64, 64], mascotHappy: [64, 64], mascotSad: [64, 64], lootBag: [96, 96] };
+  function svgSize(markup) {
+    const head = (markup.match(/<svg\b[^>]*>/i) || [''])[0];
+    const num = (name) => parseFloat((head.match(new RegExp('\\s' + name + '\\s*=\\s*["\']?([\\d.]+)', 'i')) || [])[1]);
+    let w = num('width'), h = num('height');
+    if (!(w > 0 && h > 0)) {
+      const vb = (head.match(/viewBox\s*=\s*["']([^"']+)["']/i) || [])[1];
+      const parts = vb ? vb.trim().split(/[\s,]+/).map(Number) : [];
+      if (parts.length === 4) { w = parts[2]; h = parts[3]; }
+    }
+    return w > 0 && h > 0 ? [w, h] : null;
+  }
+  function matchStrays(wanted, files, strays) {
+    const open = Object.entries(wanted).filter(([slot, file]) => SLOT_SIZE[slot] && !files[cleanPath(file || '')]).map(([slot]) => slot);
+    const left = strays.map((markup) => ({ markup, size: svgSize(markup) }));
+    const out = {};
+    const take = (slot, test) => {
+      const i = left.findIndex((st) => st.size && test(st.size, SLOT_SIZE[slot]));
+      if (i >= 0) { out[slot] = left[i].markup; left.splice(i, 1); }
+    };
+    open.forEach((slot) => take(slot, (a, b) => Math.abs(a[0] - b[0]) <= 2 && Math.abs(a[1] - b[1]) <= 2));
+    open.filter((slot) => !out[slot]).forEach((slot) => take(slot, (a, b) => Math.abs(a[0] / a[1] - b[0] / b[1]) / (b[0] / b[1]) < 0.25));
+    open.filter((slot) => !out[slot]).forEach((slot) => { const i = left.findIndex((st) => !st.size); if (i >= 0) { out[slot] = left[i].markup; left.splice(i, 1); } });
+    return out;
+  }
+
   function buildTheme(text) {
     const notes = [];
     const note = (level, ...parts) => notes.push({ level, parts });
@@ -198,11 +287,12 @@
     const wanted = json && json.art && typeof json.art === 'object' ? json.art : {};
     const used = new Set();
     let found = 0;
+    const strayFor = matchStrays(wanted, files, strays);
     for (const [slot, file] of Object.entries(wanted)) {
       if (!ART_SLOTS.includes(slot)) { note('warn', code('theme.json'), ' names a picture spot called "' + slot + '", which the shop doesn\'t have.'); continue; }
       const path = cleanPath(file || '');
       let markup = path && files[path];
-      if (!markup && strays.length) { markup = strays.shift(); note('info', 'A picture without a file name was used for ', code(path || slot), '.'); }
+      if (!markup && strayFor[slot]) { markup = strayFor[slot]; note('info', 'A picture without a file name was matched to ', code(path || slot), ' by its size.'); }
       if (!markup) { note('warn', 'Picture ', code(path || String(file)), " is listed but wasn't pasted, so that spot stays empty."); continue; }
       used.add(path);
       const problem = svgProblem(markup);
@@ -272,13 +362,19 @@
   const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 
   // The color actually behind an element: its own background, blended over its parents'.
-  function backdrop(win, node) {
+  // Gradients count too: each solid-enough color in a gradient is a possible backdrop, and the
+  // check uses whichever is hardest to read against.
+  function backdrops(win, node) {
     const layers = [];
+    let bases = [[255, 255, 255, 1]];
     for (let n = node; n && n.nodeType === 1; n = n.parentElement) {
-      const c = parseColor(win.getComputedStyle(n).backgroundColor);
-      if (c && c[3] > 0) { layers.push(c); if (c[3] >= 1) break; }
+      const cs = win.getComputedStyle(n);
+      const stops = (cs.backgroundImage.match(/rgba?\([^)]*\)/g) || []).map(parseColor).filter((c) => c && c[3] >= 0.6);
+      const c = parseColor(cs.backgroundColor);
+      if (stops.length) { bases = stops.map((st) => (c && c[3] > 0 ? over(st, over(c, [255, 255, 255, 1])) : over(st, [255, 255, 255, 1]))); break; }
+      if (c && c[3] > 0) { if (c[3] >= 1) { bases = [c]; break; } layers.push(c); }
     }
-    return layers.reduceRight((under, top) => over(top, under), [255, 255, 255, 1]);
+    return bases.map((base) => layers.reduceRight((under, top) => over(top, under), base));
   }
 
   const READ_SPOTS = [
@@ -320,8 +416,8 @@
       const cs = win.getComputedStyle(node);
       const fg = parseColor(cs.color);
       if (!fg) continue;
-      const bg = backdrop(win, node);
-      const ratio = contrast(over(fg, bg), bg);
+      let bg = null, ratio = Infinity;
+      for (const b of backdrops(win, node)) { const r = contrast(over(fg, b), b); if (r < ratio) { ratio = r; bg = b; } }
       const size = parseFloat(cs.fontSize);
       const big = bigByRole || size >= 24 || (size >= 18.6 && Number(cs.fontWeight) >= 700);
       const need = big ? 3 : 4.5;
@@ -355,9 +451,25 @@
   }
 
   function onPaste() {
+    clearTimeout(timer);
+    try { readPaste(); } catch (err) {
+      console.error('[theme lab]', err);
+      status("Something went wrong reading that. Try copying the AI's answer again with its Copy button, then paste it here.", 'bad');
+    }
+  }
+
+  function status(message, level) {
+    const node = $('#paste-status');
+    node.textContent = message;
+    node.className = 'paste-status' + (level ? ' is-' + level : '');
+    node.hidden = !message;
+  }
+
+  function readPaste() {
     const text = paste.value;
     store.set(DRAFT_KEY, text);
     if (!text.trim()) {
+      status('');
       built = null;
       $('#found').replaceChildren();
       $('#found-empty').hidden = false;
@@ -376,9 +488,17 @@
       : 'Once a theme is pasted and looks right, you can download it here.';
     if (!built) {
       // Still show the colors while theme.json gets fixed.
-      if (result.blocked && result.theme.css) { current = { source: 'paste' }; showing(result.name, true); send(result.theme); }
+      if (result.blocked && result.theme.css) {
+        current = { source: 'paste' }; showing(result.name, true); send(result.theme);
+        status('The preview shows the colors, but theme.json has a typo. See step 2.', 'warn');
+      } else {
+        status("Couldn't find a theme in what you pasted. Copy the AI's whole answer (its Copy button works best) and paste it here.", 'bad');
+        showBuiltin($('#builtin').value, true); // keep the preview filled in, never blank
+      }
       return;
     }
+    const pics = Object.keys(built.theme.art).length;
+    status('Preview updated with "' + built.name + '"' + (pics ? ' and ' + pics + (pics === 1 ? ' picture' : ' pictures') : '') + '.', 'ok');
     $('#folder-name').textContent = built.folder;
     $('#csv-line').value = csvField(built.name) + ',' + built.folder;
     $('#share-note').textContent = '';
@@ -390,6 +510,7 @@
   const csvField = (s) => (/[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s);
 
   paste.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(onPaste, 350); });
+  $('#show').addEventListener('click', onPaste);
   $('#clear').addEventListener('click', () => { paste.value = ''; history.replaceState(null, '', location.pathname + location.search); onPaste(); paste.focus(); });
 
 
@@ -418,10 +539,10 @@
   }
 
   let builtinCache = {};
-  async function showBuiltin(folder) {
+  async function showBuiltin(folder, force) {
     if (!folder) return;
     const t = builtinCache[folder] || (builtinCache[folder] = await loadBuiltin(folder));
-    if (paste.value.trim() && current && current.source === 'paste') return; // pasted themes win
+    if (!force && paste.value.trim() && current && current.source === 'paste') return; // pasted themes win
     current = { source: 'builtin', folder };
     showing(t.json.name || folder, false);
     send({ css: t.css, json: t.json, art: t.art });
