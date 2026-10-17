@@ -124,6 +124,7 @@
     'stat.shops': '{n} shop | {n} shops',
     starred: 'Starred',
     starredOnly: 'Starred only',
+    hideGiftCards: 'Hide gift cards',
     starBadge: 'Starred: most wanted',
     searchLabel: 'Search',
     searchPlaceholder: 'Search the list',
@@ -211,6 +212,7 @@
     'planner.reserve': '+ ~{amount} est. tax & shipping',
     'planner.spare': '{amount} spare',
     'planner.bufferHint': 'About {pct}% of the budget is set aside as a rough guess for tax and shipping. Real costs vary by shop and location, so check the total at checkout.',
+    'planner.giftCardNoTax': 'Gift cards skip this, since they are usually tax-free and sent by email.',
     'planner.onlyFit': 'Only {n} of {want} gifts fit this budget with the current filters.',
     'planner.maxBudget': 'The planner can only count up to {amount} at a time.',
     'planner.claimHint': 'Bought one? Mark it on its card so nobody doubles up.',
@@ -524,6 +526,7 @@
     sheetRefs: new Set(),   // refs already in the sheet
     q: '',
     starOnly: false,
+    hideGiftCards: false,
     vendorsOff: new Set(),
     types: new Set(),
     band: 'all',
@@ -718,10 +721,12 @@
 
   /* ---------- filtering ---------- */
 
-  function filtered() {
+  // keepGiftCards ignores the "Hide gift cards" box, so the gift helper can still fill leftovers with one.
+  function filtered({ keepGiftCards = false } = {}) {
     const band = PRICE_BANDS.find((b) => b.id === state.band) || PRICE_BANDS[0];
     const q = state.q.trim().toLowerCase();
     return state.items.filter((it) => {
+      if (it.giftCard && state.hideGiftCards && !keepGiftCards) return false;
       if (state.vendorsOff.has(it.shopGroup)) return false;
       if (state.starOnly && !it.starred) return false;
       if (state.types.size && !it.tags.some((t) => state.types.has(t))) return false;
@@ -749,6 +754,7 @@
   /* ---------- filter controls ---------- */
 
   function buildFilters() {
+    $('#gift-toggle').hidden = !state.items.some((it) => it.giftCard);
     const types = [...new Set(state.items.flatMap((it) => it.tags))].filter((t) => t !== 'Other').sort();
     types.push('Other');
     $('#type-chips').replaceChildren(...types.map((t) => el('button', {
@@ -790,9 +796,10 @@
   }
 
   function resetFilters() {
-    state.q = ''; state.starOnly = false; state.vendorsOff.clear(); state.types.clear(); state.band = 'all';
+    state.q = ''; state.starOnly = false; state.hideGiftCards = false; state.vendorsOff.clear(); state.types.clear(); state.band = 'all';
     $('#q').value = '';
     $('#star-only').checked = false;
+    $('#hide-gift').checked = false;
     document.querySelectorAll('#vendor-list input').forEach((i) => { i.checked = true; });
     document.querySelectorAll('#type-chips .chip').forEach((ch) => ch.setAttribute('aria-pressed', 'false'));
     document.querySelectorAll('#price-chips .chip').forEach((ch) => ch.setAttribute('aria-pressed', String(ch.dataset.band === 'all')));
@@ -1148,9 +1155,12 @@
     const budget = parseFloat(state.budget);
     const want = parseInt(state.count, 10);
     const buffer = Math.min(0.9, Math.max(0, CONFIG.taxShippingBuffer || 0));
+    // Items are planned within budget minus the buffer. Tax & shipping is then estimated on the items
+    // actually picked, at the same rate, so a gift card (tax-free, sent by email) gets the rest untouched.
     const reserve = budget > 0 ? Math.round(budget * buffer * 100) / 100 : 0;
     const giftBudget = budget > 0 ? budget - reserve : budget;
     const plan = planGifts(list, giftBudget, want > 0 ? want : 0);
+    const itemReserveFor = (total) => (buffer > 0 && total > 0 ? Math.ceil(total * buffer / (1 - buffer) * 100) / 100 : 0);
 
     if (plan.state === 'idle') {
       setMascot('idle', t('planner.idle'));
@@ -1164,8 +1174,11 @@
     }
 
     const itemsTotal = plan.state === 'show' ? plan.total : 0;
-    const spareWhole = Math.floor(giftBudget - itemsTotal + 1e-9);
-    const topCard = pickGiftCard(list, spareWhole);
+    const itemReserve = itemReserveFor(itemsTotal);
+    const spareWhole = Math.floor(budget - itemsTotal - itemReserve + 1e-9);
+    // With gift cards hidden, a card can still use up what's left after real gifts, but never stands in for them.
+    const cardPool = state.hideGiftCards ? (itemsTotal > 0 ? filtered({ keepGiftCards: true }) : []) : list;
+    const topCard = pickGiftCard(cardPool, spareWhole);
     const topUp = topCard ? { item: topCard, amount: spareWhole } : null;
 
     if (plan.state === 'none' && topUp) {
@@ -1224,12 +1237,13 @@
       el('ul', { class: 'plan-list' }, rows),
       el('div', { class: 'plan-totals' }, [
         el('span', { class: 'plan-total', text: t('planner.total', { amount: fmt(grand) }) }),
-        reserve > 0 && el('span', { class: 'plan-left', text: t('planner.reserve', { amount: fmt(reserve) }) }),
-        el('span', { class: 'plan-left', text: t('planner.spare', { amount: fmt(Math.max(0, giftBudget - grand)) }) }),
+        itemReserve > 0 && el('span', { class: 'plan-left', text: t('planner.reserve', { amount: fmt(itemReserve) }) }),
+        el('span', { class: 'plan-left', text: t('planner.spare', { amount: fmt(Math.max(0, budget - grand - itemReserve)) }) }),
       ]),
     ];
-    if (reserve > 0) {
-      children.push(el('p', { class: 'plan-hint', text: t('planner.bufferHint', { pct: Math.round(buffer * 100) }) }));
+    if (itemReserve > 0) {
+      children.push(el('p', { class: 'plan-hint', text: t('planner.bufferHint', { pct: Math.round(buffer * 100) }) +
+        (topUp ? ' ' + t('planner.giftCardNoTax') : '') }));
     }
     if (want > 0 && plan.units < want) {
       children.push(el('p', { class: 'plan-note', text: t('planner.onlyFit', { n: plan.units, want }) }));
@@ -1437,6 +1451,7 @@
   function wire() {
     $('#q').addEventListener('input', (e) => { state.q = e.target.value; render(); });
     $('#star-only').addEventListener('change', (e) => { state.starOnly = e.target.checked; render(); });
+    $('#hide-gift').addEventListener('change', (e) => { state.hideGiftCards = e.target.checked; render(); });
     $('#sort').addEventListener('change', (e) => { state.sort = e.target.value; render(); });
     $('#reset').addEventListener('click', resetFilters);
     $('#gp-budget').addEventListener('input', (e) => { state.budget = e.target.value; renderPlanner(filtered()); });
