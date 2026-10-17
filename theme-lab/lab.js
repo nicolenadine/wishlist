@@ -493,6 +493,7 @@
         status('The preview shows the colors, but theme.json has a typo. See step 2.', 'warn');
       } else {
         status("Couldn't find a theme in what you pasted. Copy the AI's whole answer (its Copy button works best) and paste it here.", 'bad');
+        showBuiltin($('#builtin').value, true); // keep the preview filled in, never blank
       }
       return;
     }
@@ -538,10 +539,10 @@
   }
 
   let builtinCache = {};
-  async function showBuiltin(folder) {
+  async function showBuiltin(folder, force) {
     if (!folder) return;
     const t = builtinCache[folder] || (builtinCache[folder] = await loadBuiltin(folder));
-    if (paste.value.trim() && current && current.source === 'paste') return; // pasted themes win
+    if (!force && paste.value.trim() && current && current.source === 'paste') return; // pasted themes win
     current = { source: 'builtin', folder };
     showing(t.json.name || folder, false);
     send({ css: t.css, json: t.json, art: t.art });
