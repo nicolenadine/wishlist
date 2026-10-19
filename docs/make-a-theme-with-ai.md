@@ -2,7 +2,7 @@
 
 You don't need to know any code to make your own theme. Describe the look you want to an AI like Claude or ChatGPT, paste its answer into the **Theme Lab**, and watch a sample shop change to match. When it looks right, download it and add it to your wishlist.
 
-<img src="media/theme-lab.webp" alt="The Theme Lab. On the left, the pasted AI answer, a Show it button and the message 'Preview updated with Snowlit Cabin and 4 pictures.' On the right, a sample wishlist shop in a cozy winter cabin theme, with snowy pines, a cabin and a little fox running the gift helper." width="100%">
+<img src="media/theme-lab.webp" alt="The Theme Lab. On the left, step 1, Give your AI the instructions, with a Copy AI instructions button, and step 2, where the AI's answer is pasted. On the right, a sample wishlist shop in a cozy winter cabin theme, with snowy pines, a cabin and a little fox running the gift helper." width="100%">
 
 ## 1. Open the Theme Lab
 
@@ -83,7 +83,9 @@ Made something you're proud of? You can share it so it shows up in everyone's Th
 <details>
 <summary><b>I clicked Show it and the lab says it couldn't find a theme.</b></summary>
 
-Copy the AI's answer again using the **Copy** button under the whole reply, then paste it into an empty box (click **Clear** first). If the AI only described a theme without sending its files, ask: *"Please send all the theme files."*
+Most often, the AI never got the instructions. It can't make a usable theme from an idea alone, so start a new chat, paste the instructions from **Copy AI instructions** first, and then describe your theme.
+
+If it did have them, copy its answer again with the **Copy** button under the whole reply, click **Clear** in the lab, and paste again. If the AI only described a theme without sending its files, ask: *"Please send all the theme files."*
 </details>
 
 <details>

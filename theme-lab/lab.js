@@ -496,7 +496,7 @@
         current = { source: 'paste' }; showing(result.name, true); send(result.theme);
         status('The preview shows the colors, but theme.json has a typo. See step 2.', 'warn');
       } else {
-        status("Couldn't find a theme in what you pasted. Copy the AI's whole answer (its Copy button works best) and paste it here.", 'bad');
+        status("Couldn't find a theme in what you pasted. Make sure the AI got the instructions from step 1 first, then copy its whole answer (its Copy button works best) and paste it here.", 'bad');
         showBuiltin($('#builtin').value, true); // keep the preview filled in, never blank
       }
       return;

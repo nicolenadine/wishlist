@@ -176,17 +176,22 @@
       <h1>Theme lab</h1>
       <a href="./">Back to the shop</a>
     </div>
-    <p class="lede">Paste the theme your AI made, and the sample shop changes to match. Nothing is saved or published until you add it to your copy on GitHub.</p>
+    <p class="lede">Have an AI design a theme for you, then paste its answer here to see it on a sample shop. Nothing is saved or published until you add it to your copy on GitHub.</p>
 
     <section class="step" aria-labelledby="s1">
-      <div class="step-head"><span class="step-num" aria-hidden="true">1</span><h2 id="s1">Paste the AI's answer</h2></div>
-      <p class="soft">Don't have one yet? Copy these instructions, paste them into Claude, ChatGPT or another AI, and describe the look you want. (<a href="https://github.com/nicolenadine/wishlist/blob/main/docs/make-a-theme-with-ai.md" target="_blank" rel="noopener">More help</a>)</p>
-      <div class="row" style="margin:0 0 12px">
-        <button type="button" class="btn" id="copy-skill">Copy AI instructions</button>
+      <div class="step-head"><span class="step-num" aria-hidden="true">1</span><h2 id="s1">Give your AI the instructions</h2></div>
+      <p>An AI doesn't know how a wishlist theme works, so start every new chat by pasting these instructions. They tell it which files to make and how to lay them out. Asking for "a cozy cabin theme" without them won't give the lab anything it can use.</p>
+      <div class="row" style="margin:0 0 8px">
+        <button type="button" class="btn btn-main" id="copy-skill">Copy AI instructions</button>
         <button type="button" class="btn btn-quiet" id="skill-zip">Or add them to Claude as a skill</button>
       </div>
       <p class="note" id="skill-note" role="status" hidden></p>
-      <p class="soft">Then copy the AI's whole answer (its Copy button works best), paste it here, and click <strong>Show it</strong>.</p>
+      <p class="soft">Paste them into a new chat in Claude, ChatGPT or another AI, then describe the look you want, like "a cozy cabin theme with a little fox." (<a href="https://github.com/nicolenadine/wishlist/blob/main/docs/make-a-theme-with-ai.md" target="_blank" rel="noopener">More help</a>)</p>
+    </section>
+
+    <section class="step" aria-labelledby="s1b">
+      <div class="step-head"><span class="step-num" aria-hidden="true">2</span><h2 id="s1b">Paste the AI's answer</h2></div>
+      <p class="soft">Copy the AI's whole answer (the Copy button under its reply works best), paste it here, and click <strong>Show it</strong>.</p>
       <label for="paste" class="soft" hidden>The AI's answer</label>
       <textarea id="paste" spellcheck="false" placeholder="Paste here. For example:&#10;&#10;```css theme.css&#10;:root { --page: #FFF7F0; … }&#10;```&#10;```json theme.json&#10;{ &quot;name&quot;: &quot;Cozy Cabin&quot;, … }&#10;```"></textarea>
       <div class="row">
@@ -196,7 +201,7 @@
       <p class="paste-status" id="paste-status" role="status" hidden></p>
       <details class="remix">
         <summary>Change one of the built-in themes instead</summary>
-        <p>Pick a theme to see it here. Copy its files, paste them to your AI, and say what you'd like different.</p>
+        <p>Pick a theme to see it here. In a new AI chat, paste the AI instructions first, then this theme's files, and say what you'd like different.</p>
         <div class="row">
           <label for="builtin" hidden>Built-in theme</label>
           <select id="builtin"></select>
@@ -206,7 +211,7 @@
     </section>
 
     <section class="step" aria-labelledby="s2">
-      <div class="step-head"><span class="step-num" aria-hidden="true">2</span><h2 id="s2">Check what was found</h2></div>
+      <div class="step-head"><span class="step-num" aria-hidden="true">3</span><h2 id="s2">Check what was found</h2></div>
       <p class="soft" id="found-empty">Paste an answer to see which files the lab found.</p>
       <ul class="found" id="found"></ul>
       <div id="colors" hidden>
@@ -218,7 +223,7 @@
     </section>
 
     <section class="step" aria-labelledby="s3">
-      <div class="step-head"><span class="step-num" aria-hidden="true">3</span><h2 id="s3">Save it</h2></div>
+      <div class="step-head"><span class="step-num" aria-hidden="true">4</span><h2 id="s3">Save it</h2></div>
       <p class="soft" id="save-empty">Once a theme is pasted and looks right, you can download it here.</p>
       <div id="save" hidden>
         <div class="row" style="margin-top:0">
@@ -252,6 +257,6 @@
     </div>
   </main>
 </div>
-<script src="theme-lab/lab.js?v=20261019b"></script>
+<script src="theme-lab/lab.js?v=20261019c"></script>
 </body>
 </html>
