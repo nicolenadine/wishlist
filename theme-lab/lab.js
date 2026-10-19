@@ -392,6 +392,8 @@
     ['.chip', 'Filter buttons'],
     ['.filter-title', 'Filter headings'],
     ['.bubble p', 'Gift helper messages'],
+    ['.plan-total', 'Gift helper total'],
+    ['.plan-name', 'Suggested gift names'],
     ['.planner-title', 'Gift helper title', true],
     ['.count', 'Item count'],
     ['.footer', 'Footer'],

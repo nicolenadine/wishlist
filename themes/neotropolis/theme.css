@@ -130,6 +130,8 @@ h1 {
 .plan-total {
   font-family: var(--font-mono);
   color: var(--gift);
+  background: var(--surface);
+  border: 1px solid var(--gift);
 }
 
 /* Filters */
