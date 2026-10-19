@@ -37,7 +37,9 @@
   }
   const code = (s) => el('code', { text: s });
 
-  const slug = (s) => String(s || '').toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+  // The same folder name the site guesses from a theme's name (themeFolder in app.js), so a theme typed
+  // into the sheet by name finds its folder without a line in themes.csv.
+  const slug = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' ').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 
   /* ---------- splitting a pasted answer into files ---------- */
@@ -502,14 +504,13 @@
     const pics = Object.keys(built.theme.art).length;
     status('Preview updated with "' + built.name + '"' + (pics ? ' and ' + pics + (pics === 1 ? ' picture' : ' pictures') : '') + '.', 'ok');
     $('#folder-name').textContent = built.folder;
-    $('#csv-line').value = csvField(built.name) + ',' + built.folder;
+    $('#theme-name').textContent = built.name;
     $('#share-note').textContent = '';
     current = { source: 'paste' };
     showing(built.name, true);
     send(built.theme);
   }
 
-  const csvField = (s) => (/[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s);
 
   paste.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(onPaste, 350); });
   $('#show').addEventListener('click', onPaste);
@@ -610,7 +611,6 @@
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 
-  $('#copy-csv').addEventListener('click', (e) => copy($('#csv-line').value, e.currentTarget, 'Copied'));
 
 
   /* ---------- download: a zip with the theme folder ---------- */

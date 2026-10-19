@@ -99,6 +99,9 @@ Pick one from the **Theme** dropdown in your sheet's Settings tab. To try one fi
 - **New sheet options:** the occasional update adds an optional setting to the sheet. In your sheet, click **Wishlist → Check for updates** and say yes. ([About the Wishlist menu](docs/sheet-menu.md), or add them by hand from [Sheet changes](docs/sheet-changes.md).)
 - **Check that everything's working:** add `?check` to the end of your site's address. You'll get a plain-language checklist of your sheet, settings, theme and claiming, with a fix for anything that's off.
 
+> [!CAUTION]
+> If **Sync fork** ever says it can't update automatically, or offers to **Discard commits**, don't click Discard. It would erase your own changes: your sheet link in `config.js`, any photos you uploaded, and any themes you made. Close the box instead (nothing has changed yet) and [open an issue](https://github.com/nicolenadine/wishlist/issues/new) with a link to your copy. It's fixable.
+
 <details>
 <summary><b>Let gift-givers mark items as bought</b></summary>
 <br>
@@ -215,7 +218,10 @@ Then open http://localhost:8000. Handy URL switches: `?check` shows the setup re
 
 **Sheet changes are always additive and optional.** A change must never break an existing sheet or require copying it again: new settings fall back to a default when their row is missing, and new columns are optional. Any change that touches the sheet gets an entry in [`sheet/updates.json`](sheet/updates.json), so the sheet's **Wishlist → Check for updates** can apply it, and in [docs/sheet-changes.md](docs/sheet-changes.md) for people adding it by hand (the format is in a comment at the bottom). Updates are data, not code: each one is a list of actions that [`sheet/Wishlist.gs`](sheet/Wishlist.gs) already knows (`settingRow`, `formulaTab`, `settingDropdown`). A new kind of action means a new `SCRIPT_VERSION` in the script and a matching `menuVersion` in `updates.json`, and new Settings rows go in `SETTING_NAMES` and `SETTING_LABELS` in `app.js` so `?check` can suggest them.
 
-**Don't change `config.js` here.** Every copy edits that file (at least the sheet link), so any change to it in this repo, even to a comment, makes **Sync fork** stop with a conflict for everyone. New options go in the sheet's Settings tab, with their defaults in `DEFAULTS` in `app.js`.
+**Don't change files that copies edit.** **Sync fork** stops with a conflict, and offers to discard people's own work, whenever this repo and a copy both change the same lines. Copies edit `config.js` (at least the sheet link), add photos to `wishlist-images/`, and add their own theme folders. So:
+- Never change `config.js` here, not even a comment. New options go in the sheet's Settings tab, with their defaults in `DEFAULTS` in `app.js`.
+- Only `README.md` lives in `wishlist-images/`; don't add sample photos there.
+- `themes/themes.csv` lists shared themes only. Copies never need to edit it (the site finds a personal theme's folder from its name), so adding a line here for a new shared theme is safe.
 
 **Settings.** Anything in the sheet's Settings tab can also be set in `config.js`; the sheet wins when both are filled in, and `config.js` is the fallback if the tab is missing. When you change `app.js` or `styles.css`, bump the `?v=` number in `index.html` so browsers fetch the new version. `config.js` is always fetched fresh, so people's edits show up as soon as GitHub publishes them.
 

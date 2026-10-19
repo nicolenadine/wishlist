@@ -64,9 +64,9 @@ Drag the whole folder onto the page. Every file should be listed under your them
 
 <img src="media/theme-ai/05-commit-upload.webp" alt="GitHub's upload page listing six files, all inside snowlit-cabin: theme.css, theme.json and four pictures in art. Commit changes is highlighted." width="100%">
 
-**Add it to the theme list.** Still in the **themes** folder, open **themes.csv**, click the pencil, add the line the lab shows you (like `Snowlit Cabin,snowlit-cabin`) at the very end, and click **Commit changes**.
+**Switch to it.** In your sheet's **Settings** tab, type your theme's name into the **Theme** cell, exactly as the lab shows it. It won't be in the dropdown, because the dropdown lists the themes everyone shares, but typing it works: the site finds your folder from the name. A small red corner on the cell is expected.
 
-**Switch to it.** In your sheet's **Settings** tab, type your theme's name into the **Theme** cell. It won't be in the dropdown, because the dropdown lists the themes everyone shares, but typing it works. A small red corner on the cell is expected.
+Don't edit `themes.csv` for your own theme. That file lists the shared themes, and editing it can make **Sync fork** stop with a conflict later on.
 
 <img src="media/theme-ai/06-theme-cell.webp" alt="The sheet's Settings tab, with Snowlit Cabin typed into the Theme cell, which shows a small red corner." width="600">
 

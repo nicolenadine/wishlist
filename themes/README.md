@@ -38,7 +38,7 @@ theme: 'rpg-shop',
 3. In `theme.json`, give it a name and change any wording you like (see the list below).
 4. Optionally add art and a mascot (see below).
 5. Preview it with `?theme=your-folder-name`, or paste the files into the [Theme Lab](../theme-lab.html) to check them before you commit.
-6. Add a line to `themes.csv` with its name and folder, like `Cozy Cabin,cozy-cabin`. That's what lets the sheet's Theme dropdown offer it by name.
+6. Type its name into the **Theme** cell in your sheet's Settings tab, like `Cozy Cabin`. The site finds the `cozy-cabin` folder from the name, so there's nothing else to register. (Don't add it to `themes.csv`: that file lists shared themes, and editing it in your copy can make **Sync fork** stop with a conflict.)
 
 ## Share your theme with everyone
 
@@ -47,7 +47,7 @@ Made something you like? Contribute it, and it will appear in every wishlist's T
 1. Make your theme in your own copy of the repo, following the steps above, and check it with `?theme=your-folder-name`.
 2. Make sure it's all yours to share: your own art, and fonts from [Google Fonts](https://fonts.google.com) (they're free to use). No characters, logos or artwork from other people's work.
 3. On your copy's GitHub page, click **Contribute → Open pull request**. Give it a short title like "Add the Cozy Cabin theme", describe the look in a sentence or two, and attach a screenshot.
-4. A pull request is a suggestion, not a change: nothing happens to the main project until it's reviewed. You might get a question or two before it's added.
+4. A pull request is a suggestion, not a change: nothing happens to the main project until it's reviewed. You might get a question or two before it's added. When it's added, it also gets a line in `themes.csv` so it shows up in everyone's dropdown; you don't need to add that yourself.
 
 New to pull requests? GitHub has a friendly [guide to your first pull request](https://docs.github.com/en/get-started/start-your-journey/hello-world). Themes are the easiest kind of contribution, because they're only CSS, JSON and SVG and can't break anyone's shop.
 
