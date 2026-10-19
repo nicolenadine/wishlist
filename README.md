@@ -16,7 +16,7 @@
   <img alt="No coding needed" src="https://img.shields.io/badge/no_coding-needed-E0527A?style=flat-square">
   <img alt="Hosting: free on GitHub Pages" src="https://img.shields.io/badge/hosting-free-2F9C8A?style=flat-square">
   <img alt="Runs on Google Sheets" src="https://img.shields.io/badge/runs_on-Google_Sheets-34A853?style=flat-square&logo=googlesheets&logoColor=white">
-  <img alt="7 themes" src="https://img.shields.io/badge/themes-7-5A3FA0?style=flat-square">
+  <img alt="8 themes" src="https://img.shields.io/badge/themes-8-5A3FA0?style=flat-square">
   <a href="LICENSE"><img alt="License: GPL v3" src="https://img.shields.io/badge/license-GPL_v3-2B2A5C?style=flat-square"></a>
 </p>
 
@@ -34,7 +34,7 @@ You update it by editing the spreadsheet. There's nothing to install and nothing
 - **A gift helper.** Type in a budget and it suggests gifts that fit, holding a little back for tax and shipping.
 - **No doubled-up gifts.** One tap marks something as bought. Everyone else sees it's taken; you don't.
 - **Sale prices.** Optional daily price checks show when something you want goes on sale.
-- **A look that fits the occasion.** Seven themes, from a pixel-art item shop to a Krampus night. Pick one from a dropdown.
+- **A look that fits the occasion.** Eight themes, from a pixel-art item shop to a Krampus night to a neon city of the future. Pick one from a dropdown.
 
 ## How it works
 
@@ -86,7 +86,8 @@ Pick one from the **Theme** dropdown in your sheet's Settings tab. To try one fi
   </tr>
   <tr>
     <td valign="top"><a href="https://nicolenadine.github.io/wishlist/?theme=starter"><img src="docs/media/themes/starter-thumb.webp" alt="Starter theme"></a><br><b>Starter</b><br><sub>Plain and simple. The one to copy when you make your own.</sub></td>
-    <td colspan="2" valign="middle" align="center"><b>Make your own</b><br><sub>Describe it to an AI and preview it in the <a href="https://nicolenadine.github.io/wishlist/theme-lab.html">Theme Lab</a>, no code needed:<br><a href="docs/make-a-theme-with-ai.md">Make a theme with AI</a>. Or build one by hand with the <a href="themes/README.md">themes guide</a>,<br>and <a href="themes/README.md#share-your-theme-with-everyone">share it</a> so everyone can use it (optional).</sub></td>
+    <td valign="top"><a href="https://nicolenadine.github.io/wishlist/?theme=neotropolis"><img src="docs/media/themes/neotropolis-thumb.webp" alt="Neotropolis theme"></a><br><b>Neotropolis</b><br><sub>A retro-future neon city at night, with Volt the robot running the gift helper.</sub></td>
+    <td valign="middle" align="center"><b>Make your own</b><br><sub>Describe it to an AI and preview it in the <a href="https://nicolenadine.github.io/wishlist/theme-lab.html">Theme Lab</a>, no code needed: <a href="docs/make-a-theme-with-ai.md">Make a theme with AI</a>.<br><br>Or build one by hand with the <a href="themes/README.md">themes guide</a>, and <a href="themes/README.md#share-your-theme-with-everyone">share it</a> so everyone can use it (optional).</sub></td>
   </tr>
 </table>
 
