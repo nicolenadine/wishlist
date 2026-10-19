@@ -117,4 +117,4 @@ When you're happy with it, share your site's address with family and friends.
 - **Get new features later:** on your copy's GitHub page, click **Sync fork → Update branch**. Your settings are kept. Now and then an update also adds something to the sheet: click **Wishlist → Check for updates** in your sheet to get it.
 
 > [!CAUTION]
-> If GitHub ever offers to **Discard commits** when syncing, don't. That would erase your sheet link. [Open an issue](https://github.com/nicolenadine/wishlist/issues) instead and we'll sort it out.
+> If **Sync fork** ever says it can't update automatically, or offers to **Discard commits**, don't click Discard. It would erase your own changes: your sheet link in `config.js`, any photos you uploaded, and any themes you made. Close the box instead (nothing has changed yet) and [open an issue](https://github.com/nicolenadine/wishlist/issues/new) with a link to your copy. It's fixable.

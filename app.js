@@ -416,7 +416,7 @@
       const hit = list.find((th) => norm(th.folder) === want || norm(th.name) === want);
       if (hit) return String(hit.folder).toLowerCase().replace(/[^a-z0-9-]/g, '');
     } catch (err) { /* fall through to a best guess */ }
-    const guess = String(value).toLowerCase().replace(/&/g, ' ').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const guess = String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/&/g, ' ').trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return guess || null;
   }
 

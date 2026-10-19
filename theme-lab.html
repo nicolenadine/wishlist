@@ -229,13 +229,7 @@
         <ol class="install">
           <li>Unzip the download. You'll get a folder called <strong id="folder-name"></strong>.</li>
           <li>On GitHub, open your copy of the wishlist, go into the <strong>themes</strong> folder, click <strong>Add file → Upload files</strong>, drag the folder in, and click <strong>Commit changes</strong>.</li>
-          <li>Open <strong>themes.csv</strong> in the same folder, click the pencil, add this line at the end, and commit:
-            <div class="copyline" style="margin-top:6px">
-              <input id="csv-line" readonly aria-label="Line for themes.csv">
-              <button type="button" class="btn" id="copy-csv">Copy</button>
-            </div>
-          </li>
-          <li>In your sheet's Settings tab, type the theme's name into the <strong>Theme</strong> cell. It won't be in the dropdown, which lists the shared themes, but typing it works. Your site switches within about 5 minutes.</li>
+          <li>In your sheet's Settings tab, type <strong id="theme-name"></strong> into the <strong>Theme</strong> cell. It won't be in the dropdown, which lists the shared themes, but typing it works. Your site switches within about 5 minutes. There's no need to edit <code>themes.csv</code>.</li>
         </ol>
       </div>
     </section>
@@ -258,6 +252,6 @@
     </div>
   </main>
 </div>
-<script src="theme-lab/lab.js?v=20261019a"></script>
+<script src="theme-lab/lab.js?v=20261019b"></script>
 </body>
 </html>
