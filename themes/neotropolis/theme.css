@@ -1,0 +1,261 @@
+/* theme.css */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Chakra+Petch:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --text: #d9ffe9;
+  --text-soft: #8fd4b0;
+  --dark: #39ff88;
+  --dark-rgb: 57, 255, 136;
+  --on-dark: #04120b;
+  --page: #070d0b;
+  --header: #0b1a14;
+  --tint: #123324;
+  --input: #0c1914;
+  --surface: #0f1f18;
+  --star: #ffcc33;
+  --star-rgb: 255, 204, 51;
+  --star-soft: #3a2e0a;
+  --star-card: #1d1a0c;
+  --star-shadow: #ffcc33;
+  --star-shadow-rgb: 255, 204, 51;
+  --star-line: #ffcc33;
+  --accent: #ff3df2;
+  --accent-mid: #c22bb8;
+  --accent-soft: #2a1030;
+  --secondary: #0f2e33;
+  --secondary-hover: #164249;
+  --line: #1f3d30;
+  --line-strong: #2f6b52;
+  --focus: #5ef2ff;
+  --photo-bg: #e6efe9;
+  --shadow-rgb: 0, 0, 0;
+  --sale: #ff5c8a;
+  --sale-soft: #ff5c8a;
+  --sale-text: #1a0008;
+  --gift: #5ef2ff;
+  --looted-bg: #0b120f;
+  --looted-line: #1c2a24;
+  --looted-text: #6f8a7d;
+  --font-display: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  --font-body: 'Chakra Petch', 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
+  --cyan: #5ef2ff;
+}
+
+/* Page: faint neon grid */
+body {
+  background-color: var(--page);
+  background-image:
+    linear-gradient(rgba(57, 255, 136, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 136, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+/* Header */
+.hero {
+  background: var(--header);
+  color: var(--text);
+  border-bottom: 2px solid var(--dark);
+  box-shadow: 0 0 24px rgba(57, 255, 136, 0.18);
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #eafff3;
+  text-shadow: 0 0 12px rgba(57, 255, 136, 0.55);
+}
+.event-tag {
+  font-family: var(--font-mono);
+  background: transparent;
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  letter-spacing: 0.08em;
+}
+.stat {
+  font-family: var(--font-mono);
+  background: rgba(57, 255, 136, 0.08);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.stat-gold {
+  color: var(--star);
+  border-color: var(--star);
+  background: rgba(255, 204, 51, 0.08);
+}
+
+/* Welcome box */
+.dialog {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--dark);
+  box-shadow: 0 0 16px rgba(57, 255, 136, 0.15);
+}
+.dialog p { color: var(--text); }
+.dialog-name,
+.mascot-name {
+  font-family: var(--font-display);
+  background: var(--accent);
+  color: #1a0018;
+  letter-spacing: 0.08em;
+}
+.dialog-caret { color: var(--dark); }
+
+/* Gift helper */
+.planner {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.planner-title,
+.filter-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.quest-tag {
+  font-family: var(--font-mono);
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.bubble {
+  background: var(--dark);
+  color: var(--on-dark);
+}
+.plan-total {
+  font-family: var(--font-mono);
+  color: var(--gift);
+}
+
+/* Filters */
+.filters {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+input, select, textarea {
+  background: var(--input);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+input::placeholder { color: var(--text-soft); }
+.chip {
+  background: var(--accent-soft);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+}
+.chip[aria-pressed="true"] {
+  background: var(--dark);
+  color: var(--on-dark);
+  border-color: var(--dark);
+}
+.btn {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.btn-mint {
+  background: var(--dark);
+  color: var(--on-dark);
+  border-color: var(--dark);
+}
+.btn-gold {
+  background: var(--star);
+  color: #1a1200;
+  border-color: var(--star);
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card:hover {
+  border-color: var(--dark);
+  box-shadow: 0 0 16px rgba(57, 255, 136, 0.22);
+}
+.card.is-legendary {
+  background: var(--star-card);
+  border-color: var(--star-line);
+  box-shadow: 0 0 0 1px var(--star-line), 0 0 18px rgba(255, 204, 51, 0.22);
+}
+.card.is-looted {
+  background: var(--looted-bg);
+  border: 1px dashed var(--looted-line);
+  color: var(--looted-text);
+  box-shadow: none;
+}
+.photo { border-radius: 4px; }
+.star-badge,
+.tag-legend {
+  background: var(--star);
+  color: #1a1200;
+  font-family: var(--font-mono);
+}
+.tag { font-family: var(--font-mono); }
+.tag-type {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.price {
+  font-family: var(--font-mono);
+  color: var(--text);
+}
+.price.is-sale { color: var(--sale); }
+
+.card-actions { width: 100%; flex-wrap: wrap; gap: 8px; }
+.card-actions > * { flex: 1 1 auto; justify-content: center; white-space: nowrap; }
+
+.view {
+  background: transparent;
+  color: var(--cyan);
+  border: 2px solid var(--cyan);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  letter-spacing: 0.06em;
+}
+.view:hover {
+  background: var(--secondary-hover);
+  color: #ffffff;
+}
+.loot-btn {
+  background: var(--dark);
+  color: var(--on-dark);
+  border: 2px solid var(--dark);
+  font-family: var(--font-display);
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.loot-btn:hover { box-shadow: 0 0 12px rgba(57, 255, 136, 0.5); }
+.looted-stamp {
+  font-family: var(--font-display);
+  color: var(--accent);
+  border: 3px solid var(--accent);
+  background: rgba(7, 13, 11, 0.88);
+  letter-spacing: 0.1em;
+}
+
+/* Other */
+.toast {
+  background: var(--dark);
+  color: var(--on-dark);
+  box-shadow: 0 0 20px rgba(57, 255, 136, 0.45);
+}
+.loot-dialog {
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--dark);
+}
+.footer {
+  font-family: var(--font-mono);
+  color: var(--text-soft);
+}
+a:hover, a:focus { color: var(--focus); }

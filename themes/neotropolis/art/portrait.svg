@@ -1,0 +1,10 @@
+<!-- art/portrait.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 46" width="46" height="46">
+  <line x1="23" y1="8" x2="23" y2="3" stroke="#39ff88" stroke-width="2"/>
+  <circle cx="23" cy="3" r="2" fill="#ff3df2"/>
+  <rect x="5" y="8" width="36" height="32" rx="5" fill="#1a2f26" stroke="#39ff88" stroke-width="2"/>
+  <rect x="9" y="12" width="28" height="22" rx="3" fill="#04120b"/>
+  <rect x="14" y="17" width="4" height="5" fill="#39ff88"/>
+  <rect x="28" y="17" width="4" height="5" fill="#39ff88"/>
+  <path d="M16 27 Q23 32 30 27" fill="none" stroke="#39ff88" stroke-width="2" stroke-linecap="round"/>
+</svg>

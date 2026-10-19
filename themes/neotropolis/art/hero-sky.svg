@@ -1,0 +1,40 @@
+<!-- art/hero-sky.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 170" width="420" height="170">
+  <defs>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffcc33"/>
+      <stop offset="1" stop-color="#ff3df2"/>
+    </linearGradient>
+    <clipPath id="sunClip"><circle cx="300" cy="95" r="58"/></clipPath>
+  </defs>
+  <circle cx="300" cy="95" r="74" fill="#ff3df2" opacity="0.12"/>
+  <g clip-path="url(#sunClip)">
+    <rect x="240" y="35" width="120" height="120" fill="url(#sun)"/>
+    <g fill="#0b1a14">
+      <rect x="240" y="98" width="120" height="3"/>
+      <rect x="240" y="110" width="120" height="4"/>
+      <rect x="240" y="123" width="120" height="5"/>
+      <rect x="240" y="137" width="120" height="7"/>
+    </g>
+  </g>
+  <g fill="#39ff88">
+    <rect x="40" y="18" width="4" height="4" opacity="0.9"/>
+    <rect x="40" y="28" width="4" height="4" opacity="0.6"/>
+    <rect x="40" y="38" width="4" height="4" opacity="0.35"/>
+    <rect x="40" y="48" width="4" height="4" opacity="0.15"/>
+    <rect x="84" y="40" width="4" height="4" opacity="0.9"/>
+    <rect x="84" y="50" width="4" height="4" opacity="0.55"/>
+    <rect x="84" y="60" width="4" height="4" opacity="0.25"/>
+    <rect x="130" y="10" width="4" height="4" opacity="0.8"/>
+    <rect x="130" y="20" width="4" height="4" opacity="0.45"/>
+    <rect x="130" y="30" width="4" height="4" opacity="0.2"/>
+  </g>
+  <g fill="#5ef2ff">
+    <circle cx="180" cy="30" r="1.6"/>
+    <circle cx="215" cy="60" r="1.2"/>
+    <circle cx="390" cy="22" r="1.6"/>
+    <circle cx="372" cy="58" r="1.1"/>
+    <circle cx="246" cy="18" r="1.3"/>
+    <circle cx="160" cy="80" r="1.1"/>
+  </g>
+</svg>

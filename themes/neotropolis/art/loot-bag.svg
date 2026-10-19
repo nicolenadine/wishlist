@@ -1,0 +1,15 @@
+<!-- art/loot-bag.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
+  <circle cx="48" cy="50" r="44" fill="#39ff88" opacity="0.12"/>
+  <polygon points="48,14 80,30 48,46 16,30" fill="#39ff88"/>
+  <polygon points="16,30 48,46 48,82 16,66" fill="#1f8a52"/>
+  <polygon points="48,46 80,30 80,66 48,82" fill="#12603a"/>
+  <polyline points="32,22 64,38 64,74" fill="none" stroke="#ff3df2" stroke-width="4"/>
+  <path d="M24 52 L31 60 L42 46" fill="none" stroke="#04120b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#5ef2ff">
+    <rect x="12" y="12" width="4" height="4"/>
+    <rect x="82" y="14" width="3" height="3"/>
+    <rect x="86" y="72" width="4" height="4"/>
+    <rect x="8" y="78" width="3" height="3"/>
+  </g>
+</svg>

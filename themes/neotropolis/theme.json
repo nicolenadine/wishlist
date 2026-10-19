@@ -1,0 +1,52 @@
+{
+  "name": "Neotropolis",
+  "description": "A retro-future neon city at night: green-on-black terminal glow, an amber grid sun, and a helpful robot named Volt.",
+  "mascot": {
+    "name": "Volt",
+    "idle": "Volt, a little robot with a retro screen for a face, waiting calmly",
+    "happy": "Volt the robot, smiling with happy squinting eyes",
+    "sad": "Volt the robot, frowning with a drooping antenna"
+  },
+  "art": {
+    "heroSky": "art/hero-sky.svg",
+    "heroScene": "art/hero-scene.svg",
+    "portrait": "art/portrait.svg",
+    "mascotIdle": "art/mascot-idle.svg",
+    "mascotHappy": "art/mascot-happy.svg",
+    "mascotSad": "art/mascot-sad.svg",
+    "lootBag": "art/loot-bag.svg"
+  },
+  "text": {
+    "title": "My Neotropolis Wishlist",
+    "eventTag": "// SYSTEM ONLINE",
+    "welcomeName": "VOLT",
+    "welcome": "Welcome to the grid. Everything here is on my wishlist. Priority items are the ones I want most. Tap the {i} on a photo for sizes, colors and notes.",
+    "footer": "Compiled from a spreadsheet. End of transmission.",
+    "starred": "Priority",
+    "starredOnly": "Priority only",
+    "starBadge": "Priority: most wanted",
+    "stat.items": "{n} item | {n} items",
+    "stat.starred": "{n} priority",
+    "stat.shops": "{n} vendor | {n} vendors",
+    "sortStarred": "Priority first",
+    "view": "View",
+    "loot": "Acquired",
+    "lootedTag": "Acquired",
+    "lootedStamp": "ACQUIRED",
+    "lootedNote": "Already acquired and gifted. Thank you!",
+    "lootTitle": "Mark as acquired?",
+    "lootConfirm": "Mark acquired",
+    "toast": "Thanks! {qty}{name} is logged as acquired.",
+    "plannerTitle": "Gift Optimizer",
+    "plannerTag": "// SUBROUTINE",
+    "mascotLabel": "VOLT",
+    "planner.idle": "Enter a budget and I'll compute gifts that fit.",
+    "planner.picksTitle": "Computed gifts",
+    "planner.foundOne": "Match found!",
+    "planner.foundMany": "{n} matches found!",
+    "planner.starredFirst": "Priority items loaded first.",
+    "planner.claimHint": "Bought one? Mark it acquired on its card so nobody doubles up.",
+    "empty.title": "No signal",
+    "empty.text": "No items match those filters. Loosen one or reset them."
+  }
+}

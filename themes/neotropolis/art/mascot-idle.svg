@@ -1,0 +1,14 @@
+<!-- art/mascot-idle.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <line x1="32" y1="10" x2="32" y2="4" stroke="#39ff88" stroke-width="2"/>
+  <circle cx="32" cy="4" r="2.5" fill="#ff3df2"/>
+  <circle cx="8" cy="28" r="3" fill="#ff3df2"/>
+  <circle cx="56" cy="28" r="3" fill="#ff3df2"/>
+  <rect x="10" y="10" width="44" height="36" rx="6" fill="#1a2f26" stroke="#39ff88" stroke-width="2"/>
+  <rect x="15" y="15" width="34" height="24" rx="4" fill="#04120b"/>
+  <rect x="22" y="21" width="5" height="6" fill="#39ff88"/>
+  <rect x="37" y="21" width="5" height="6" fill="#39ff88"/>
+  <line x1="25" y1="33" x2="39" y2="33" stroke="#39ff88" stroke-width="2" stroke-linecap="round"/>
+  <rect x="26" y="46" width="12" height="4" fill="#2f6b52"/>
+  <rect x="16" y="50" width="32" height="10" rx="3" fill="#1a2f26" stroke="#39ff88" stroke-width="2"/>
+</svg>

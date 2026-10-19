@@ -1,0 +1,14 @@
+<!-- art/mascot-sad.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <line x1="32" y1="10" x2="38" y2="6" stroke="#39ff88" stroke-width="2"/>
+  <circle cx="39" cy="6" r="2.5" fill="#c22bb8"/>
+  <circle cx="8" cy="30" r="3" fill="#c22bb8"/>
+  <circle cx="56" cy="30" r="3" fill="#c22bb8"/>
+  <rect x="10" y="10" width="44" height="36" rx="6" fill="#1a2f26" stroke="#39ff88" stroke-width="2"/>
+  <rect x="15" y="15" width="34" height="24" rx="4" fill="#04120b"/>
+  <line x1="21" y1="24" x2="28" y2="26" stroke="#39ff88" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="43" y1="24" x2="36" y2="26" stroke="#39ff88" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M24 35 Q32 29 40 35" fill="none" stroke="#39ff88" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="26" y="46" width="12" height="4" fill="#2f6b52"/>
+  <rect x="16" y="50" width="32" height="10" rx="3" fill="#1a2f26" stroke="#39ff88" stroke-width="2"/>
+</svg>
