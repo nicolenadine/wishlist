@@ -95,9 +95,9 @@ Pick one from the **Theme** dropdown in your sheet's Settings tab. To try one fi
 
 - **Add, change or remove items** right in the sheet. The [sheet guide](docs/sheet-guide.md) covers every column, photos and gift cards.
 - **Change your theme, name or title** on the sheet's **Settings** tab.
-- **Get new features and themes:** on your copy's GitHub page, click **Sync fork → Update branch**. Your settings and your sheet stay exactly as they are, so there's nothing to copy over. New themes also appear in your sheet's Theme dropdown on their own.
 - **New sheet options:** the occasional update adds an optional setting to the sheet. In your sheet, click **Wishlist → Check for updates** and say yes. ([About the Wishlist menu](docs/sheet-menu.md), or add them by hand from [Sheet changes](docs/sheet-changes.md).)
 - **Check that everything's working:** add `?check` to the end of your site's address. You'll get a plain-language checklist of your sheet, settings, theme and claiming, with a fix for anything that's off.
+- **Get new features and themes:** on your copy's GitHub page, click **Sync fork → Update branch**. Your settings and your sheet stay exactly as they are, so there's nothing to copy over. New themes also appear in your sheet's Theme dropdown on their own.
 
 > [!CAUTION]
 > If **Sync fork** ever says it can't update automatically, or offers to **Discard commits**, don't click Discard. It would erase your own changes: your sheet link in `config.js`, any photos you uploaded, and any themes you made. Close the box instead (nothing has changed yet) and [open an issue](https://github.com/nicolenadine/wishlist/issues/new) with a link to your copy. It's fixable.
